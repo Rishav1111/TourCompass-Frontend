@@ -85,7 +85,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         if (widget.isEmail && _validateEmail(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 10, top: 5),
+            padding: EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validateEmail(widget.controller.text)!,
               style: TextStyle(color: Colors.red),
@@ -94,7 +94,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.isPassword &&
             _validatePassword(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 10, top: 5),
+            padding: EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validatePassword(widget.controller.text)!,
               style: TextStyle(color: Colors.red),
@@ -103,7 +103,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.isPhoneNumber &&
             _validatePhoneNumber(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 10, top: 5),
+            padding: EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validatePhoneNumber(widget.controller.text)!,
               style: TextStyle(color: Colors.red),

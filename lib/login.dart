@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/signup.dart';
 import 'package:tourcompass/GuideHome.dart';
+import 'package:tourcompass/forgetPassword/sendEmail.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/home.dart';
 import 'dart:convert';
@@ -91,7 +92,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (!widget.isPassword &&
             _validateEmail(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 10),
+            padding: EdgeInsets.only(left: 32),
             child: Text(
               _validateEmail(widget.controller.text)!,
               style: TextStyle(color: Colors.red),
@@ -302,13 +303,24 @@ class _LoginPageState extends State<LoginPage> {
                                   SizedBox(
                                     height: 10,
                                   ),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      "Forgot Password?",
-                                      style: TextStyle(
-                                        color: Colors.orange[900],
-                                        fontWeight: FontWeight.bold,
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Navigate to SignupPage
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SendEmail(),
+                                        ),
+                                      );
+                                    },
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        "Forgot Password?",
+                                        style: TextStyle(
+                                          color: Colors.orange[900],
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
