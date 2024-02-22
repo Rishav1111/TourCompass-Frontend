@@ -71,6 +71,7 @@ class __NewPasswordState extends State<NewPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
           color: Color.fromRGBO(249, 225, 211, 1),
@@ -131,19 +132,22 @@ class __NewPasswordState extends State<NewPassword> {
                       SizedBox(width: 10),
                       Expanded(
                         child: Container(
-                          height: 45,
+                          height: 53,
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
                           child: TextFormField(
                             controller: passwordController,
                             obscureText: !isPasswordVisible,
                             decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "New Password",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              labelText: "New Password",
                               hintStyle: TextStyle(color: Colors.black),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -172,19 +176,22 @@ class __NewPasswordState extends State<NewPassword> {
                       SizedBox(width: 10),
                       Expanded(
                         child: Container(
-                          height: 45,
+                          height: 53,
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
                           child: TextFormField(
                             controller: confirmPasswordController,
                             obscureText: !isConfirmPasswordVisible,
                             decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Confirm Password",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              labelText: "Confirm Passsword",
                               hintStyle: TextStyle(color: Colors.black),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {

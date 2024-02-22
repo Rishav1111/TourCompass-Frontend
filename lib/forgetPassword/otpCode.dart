@@ -105,6 +105,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
           color: Color.fromRGBO(249, 225, 211, 1),

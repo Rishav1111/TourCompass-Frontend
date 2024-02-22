@@ -89,6 +89,7 @@ class _SendEmailState extends State<SendEmail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
           color: Color.fromRGBO(249, 225, 211, 1),
@@ -149,18 +150,21 @@ class _SendEmailState extends State<SendEmail> {
                       SizedBox(width: 10),
                       Expanded(
                         child: Container(
-                          height: 45,
+                          height: 53,
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
                           child: TextFormField(
                             controller: emailController,
                             decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Email",
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              labelText: "Email",
                               hintStyle: TextStyle(color: Colors.black),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),

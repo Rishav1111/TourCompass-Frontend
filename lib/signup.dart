@@ -42,12 +42,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
             SizedBox(width: 10),
             Expanded(
               child: Container(
-                height: 45,
+                height: 53,
                 padding: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(12),
-                ),
                 child: TextField(
                   controller: widget.controller,
                   obscureText: obscureText && widget.isPassword,
@@ -55,9 +51,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       ? TextInputType.phone
                       : TextInputType.text,
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: widget.hintText,
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(12)),
+                    labelText: widget.hintText,
                     hintStyle: TextStyle(color: Colors.black),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(

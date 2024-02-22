@@ -203,13 +203,13 @@ class _SignupPageState extends State<Signup_guide> {
                                 child: Column(
                                   children: <Widget>[
                                     CustomTextField(
-                                      icon: Icons.person,
+                                      icon: Icons.account_circle,
                                       hintText: "First Name",
                                       controller: firstNameController,
                                     ),
                                     SizedBox(height: 10),
                                     CustomTextField(
-                                      icon: Icons.person,
+                                      icon: Icons.account_circle,
                                       hintText: "Last Name",
                                       controller: lastNameController,
                                     ),
@@ -218,24 +218,28 @@ class _SignupPageState extends State<Signup_guide> {
                                       icon: Icons.email,
                                       hintText: "Email",
                                       controller: emailController,
+                                      isEmail: true,
                                     ),
                                     SizedBox(height: 10),
                                     CustomTextField(
                                       icon: Icons.phone,
                                       hintText: "Phone Number",
                                       controller: phoneNumberController,
+                                      isPhoneNumber: true,
                                     ),
                                     SizedBox(height: 10),
                                     CustomTextField(
                                       icon: Icons.lock,
                                       hintText: "Password",
                                       controller: passwordController,
+                                      isPassword: true,
                                     ),
                                     SizedBox(height: 10),
                                     CustomTextField(
                                       icon: Icons.lock,
                                       hintText: "Confirm Password",
                                       controller: confirmPasswordController,
+                                      isPassword: true,
                                     ),
                                     SizedBox(height: 10),
                                     CustomTextField(
@@ -264,15 +268,19 @@ class _SignupPageState extends State<Signup_guide> {
                                     Row(
                                       children: <Widget>[
                                         Expanded(
-                                          child: ElevatedButton.icon(
-                                            onPressed: () {
-                                              _uploadPhoto("license");
-                                            },
-                                            icon: Icon(Icons.camera_alt),
-                                            label: Text(licensePhotoUrl == null
-                                                ? "Upload License Photo"
-                                                : path.basename(
-                                                    licensePhotoUrl!)),
+                                          child: SizedBox(
+                                            height: 53,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () {
+                                                _uploadPhoto("license");
+                                              },
+                                              icon: Icon(Icons.camera_alt),
+                                              label: Text(
+                                                  licensePhotoUrl == null
+                                                      ? "Upload License Photo"
+                                                      : path.basename(
+                                                          licensePhotoUrl!)),
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -283,14 +291,18 @@ class _SignupPageState extends State<Signup_guide> {
                                     Row(
                                       children: <Widget>[
                                         Expanded(
-                                          child: ElevatedButton.icon(
-                                            onPressed: () {
-                                              _uploadPhoto("user");
-                                            },
-                                            icon: Icon(Icons.camera_alt),
-                                            label: Text(userPhotoUrl == null
-                                                ? "Upload Your Photo"
-                                                : path.basename(userPhotoUrl!)),
+                                          child: SizedBox(
+                                            height: 53,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () {
+                                                _uploadPhoto("user");
+                                              },
+                                              icon: Icon(Icons.camera_alt),
+                                              label: Text(userPhotoUrl == null
+                                                  ? "Upload Your Photo"
+                                                  : path
+                                                      .basename(userPhotoUrl!)),
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -352,56 +364,142 @@ class _SignupPageState extends State<Signup_guide> {
   }
 }
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final IconData icon;
   final String hintText;
-  final VoidCallback? onUploadPressed;
+  final bool isPassword;
+  final bool isEmail;
+  final bool isPhoneNumber;
 
   const CustomTextField({
     Key? key,
     required this.icon,
     required this.hintText,
-    this.onUploadPressed,
     required this.controller,
+    this.isPassword = false,
+    this.isEmail = false,
+    this.isPhoneNumber = false,
   }) : super(key: key);
 
   @override
+  _CustomTextFieldState createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool obscureText = true;
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Icon(icon),
-        SizedBox(width: 10),
-        Expanded(
-          child: Container(
-            height: 45,
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: hintText,
-                      hintStyle: TextStyle(color: Colors.black),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: <Widget>[
+            Icon(widget.icon),
+            SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                height: 53,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: TextField(
+                  controller: widget.controller,
+                  obscureText: obscureText && widget.isPassword,
+                  keyboardType: widget.isPhoneNumber
+                      ? TextInputType.phone
+                      : TextInputType.text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(12)),
+                    labelText: widget.hintText,
+                    hintStyle: TextStyle(color: Colors.black),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    suffixIcon: widget.isPassword
+                        ? IconButton(
+                            icon: Icon(
+                              obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                obscureText = !obscureText;
+                              });
+                            },
+                          )
+                        : null,
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      // Handle validation based on widget type
+                    });
+                  },
                 ),
-                if (onUploadPressed != null)
-                  IconButton(
-                    icon: Icon(Icons.file_upload),
-                    onPressed: onUploadPressed,
-                  ),
-              ],
+              ),
+            ),
+          ],
+        ),
+        if (widget.isEmail && _validateEmail(widget.controller.text) != null)
+          Padding(
+            padding: EdgeInsets.only(left: 35, top: 5),
+            child: Text(
+              _validateEmail(widget.controller.text)!,
+              style: TextStyle(color: Colors.red),
             ),
           ),
-        ),
+        if (widget.isPassword &&
+            _validatePassword(widget.controller.text) != null)
+          Padding(
+            padding: EdgeInsets.only(left: 35, top: 5),
+            child: Text(
+              _validatePassword(widget.controller.text)!,
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        if (widget.isPhoneNumber &&
+            _validatePhoneNumber(widget.controller.text) != null)
+          Padding(
+            padding: EdgeInsets.only(left: 35, top: 5),
+            child: Text(
+              _validatePhoneNumber(widget.controller.text)!,
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
       ],
     );
+  }
+
+  String? _validateEmail(String value) {
+    // Email validation regex
+    String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+    RegExp regExp = new RegExp(emailPattern);
+
+    if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
+      return 'Please enter a valid email';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String value) {
+    // Password validation regex
+    String passwordPattern = r'^.{8,}$';
+    RegExp regExp = new RegExp(passwordPattern);
+
+    if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
+      return 'Password must contain at least 8 characters';
+    }
+    return null;
+  }
+
+  String? _validatePhoneNumber(String value) {
+    // Phone number validation
+    if (value != null && value.isNotEmpty && value.length != 10) {
+      return 'Phone number must have exactly 10 digits';
+    }
+    return null;
   }
 }
