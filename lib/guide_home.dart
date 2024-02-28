@@ -5,11 +5,11 @@ import 'package:tourcompass/order.dart';
 import 'package:tourcompass/Settings/settings.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
 
-class Home extends StatefulWidget {
+class GuideHome extends StatefulWidget {
   final id;
   final firstname;
   final userType;
-  const Home(
+  const GuideHome(
       {required this.id,
       required this.firstname,
       required this.userType,
@@ -17,10 +17,10 @@ class Home extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<Home> createState() => HomeState();
+  State<GuideHome> createState() => GuideHomeState();
 }
 
-class HomeState extends State<Home> {
+class GuideHomeState extends State<GuideHome> {
   int _selectedIndex = 0;
   late List<Widget> _pages;
 
@@ -29,7 +29,7 @@ class HomeState extends State<Home> {
     super.initState();
 
     _pages = [
-      HomeContent(fName: widget.firstname),
+      GuideHomeContent(fName: widget.firstname),
       const OrderPage(),
       Setting(
         id: widget.id,
@@ -76,10 +76,10 @@ class HomeState extends State<Home> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class GuideHomeContent extends StatelessWidget {
   final String fName;
 
-  const HomeContent({required this.fName});
+  const GuideHomeContent({required this.fName});
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +118,7 @@ class HomeContent extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                'Welcome, $fName',
+                'Welcome Guide, $fName',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

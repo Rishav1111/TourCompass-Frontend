@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tourcompass/login.dart';
+import 'package:tourcompass/Login%20and%20Signup/login.dart';
 import 'package:http/http.dart' as http;
+import 'package:tourcompass/button.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/forgetPassword/otpCode.dart';
+import 'package:tourcompass/forgetPassword/otp_code.dart';
 
 class SendEmail extends StatefulWidget {
   @override
@@ -24,8 +25,6 @@ class _SendEmailState extends State<SendEmail> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                // Navigate to the login page
-
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
@@ -66,6 +65,9 @@ class _SendEmailState extends State<SendEmail> {
 
         print("Email sent");
       } else {
+        setState(() {
+          emailController.text = '';
+        });
         // Email not sent
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -165,6 +167,8 @@ class _SendEmailState extends State<SendEmail> {
                                 borderSide: BorderSide(color: Colors.black),
                                 borderRadius: BorderRadius.circular(12),
                               ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 10),
                             ),
                           ),
                         ),
@@ -175,28 +179,11 @@ class _SendEmailState extends State<SendEmail> {
                     height: 50,
                   ),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        email(context);
-                      },
-                      child: Text(
-                        'Send',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.orange[900],
-                        onPrimary: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        minimumSize: Size(180, 10),
-                      ),
-                    ),
+                    child: CustomButton(
+                        text: "Send",
+                        onPressed: () {
+                          email(context);
+                        }),
                   ),
                 ],
               ),

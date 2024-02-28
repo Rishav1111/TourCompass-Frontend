@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tourcompass/Login%20and%20Signup/verify_travelleremail.dart';
+import 'package:tourcompass/button.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
 import 'package:tourcompass/Login%20and%20Signup/signup_guide.dart';
@@ -89,7 +91,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         if (widget.isEmail && _validateEmail(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: EdgeInsets.only(left: 45, top: 5),
             child: Text(
               _validateEmail(widget.controller.text)!,
               style: TextStyle(color: Colors.red),
@@ -98,7 +100,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.isPassword &&
             _validatePassword(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: EdgeInsets.only(left: 45, top: 5),
             child: Text(
               _validatePassword(widget.controller.text)!,
               style: TextStyle(color: Colors.red),
@@ -107,7 +109,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.isPhoneNumber &&
             _validatePhoneNumber(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: EdgeInsets.only(left: 45, top: 5),
             child: Text(
               _validatePhoneNumber(widget.controller.text)!,
               style: TextStyle(color: Colors.red),
@@ -130,11 +132,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   String? _validatePassword(String value) {
     // Password validation regex
-    String passwordPattern = r'^.{8,}$';
+    String passwordPattern =
+        r'^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
     RegExp regExp = new RegExp(passwordPattern);
 
     if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
-      return 'Password must contain at least 8 characters';
+      return 'Password must contain at least 8 characters, one uppercase letter, and one special character';
     }
     return null;
   }
@@ -148,50 +151,45 @@ class _CustomTextFieldState extends State<CustomTextField> {
   }
 }
 
-class Signup extends StatelessWidget {
+class Signup extends StatefulWidget {
+  @override
+  State<Signup> createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup> {
   final TextEditingController firstNameController = TextEditingController();
+
   final TextEditingController lastNameController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController phoneNumberController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
+
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  // Function to show a dialog with a success message
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text("Successfully signed up!"),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the login page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Your existing register function
   void register(BuildContext context) async {
-    // Check if any of the required fields are empty
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
         emailController.text.isEmpty ||
         phoneNumberController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
-      print('Please fill in all the required fields.');
+      // Show a snackbar with an error message
+      showSnackbar(context, 'Please fill in all the required fields.');
+      return;
+    }
+
+    // Check if password and confirmed password match
+    if (passwordController.text != confirmPasswordController.text) {
+      // Show a snackbar with an error message
+      setState(() {
+        passwordController.text = '';
+        confirmPasswordController.text = '';
+      });
+      showSnackbar(context, 'Password and confirmed password do not match.');
       return;
     }
 
@@ -212,21 +210,44 @@ class Signup extends StatelessWidget {
         body: jsonEncode(regBody),
       );
 
+      var jsonRespone = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        // Successful registration
-        print('User registered successfully');
-        // Show success dialog
-        _showSuccessDialog(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifyTravellerEmailOtp(
+              email: emailController.text,
+              firstName: firstNameController.text,
+              lastName: lastNameController.text,
+              password: passwordController.text,
+              confirmPassword: confirmPasswordController.text,
+              phoneNumber: phoneNumberController.text,
+            ),
+          ),
+        );
       } else {
         // Registration failed
         print('Failed to register user: ${response.statusCode}');
-        // Display an error message or handle the failure appropriately
+        showSnackbar(context, '${jsonRespone['msg']}');
       }
     } catch (e) {
-      // Exception occurred during registration
       print('Exception during registration: $e');
-      // Handle the exception appropriately
+      showSnackbar(context, 'Exception during registration: $e');
     }
+  }
+
+// Function to show a snackbar with a message
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white), // Set text color
+        ),
+        duration: Duration(seconds: 3),
+        backgroundColor: Colors.red, // Set background color to red
+      ),
+    );
   }
 
   @override
@@ -345,32 +366,11 @@ class Signup extends StatelessWidget {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      register(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors
-                                          .orange[900], // Background color
-                                      onPrimary: Colors.white, // Text color
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 15), // Button padding
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            25), // Button border radius
-                                      ),
-                                      minimumSize: Size(180,
-                                          10), // Minimum button size (width, height)
-                                    ),
-                                    child: Text(
-                                      "Sign Up",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
+                                  CustomButton(
+                                      text: "Sign Up",
+                                      onPressed: () {
+                                        register(context);
+                                      }),
                                   SizedBox(
                                     height: 20,
                                   ),

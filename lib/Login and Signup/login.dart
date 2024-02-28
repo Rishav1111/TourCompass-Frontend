@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tourcompass/button.dart';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/signup.dart';
-import 'package:tourcompass/GuideHome.dart';
-import 'package:tourcompass/forgetPassword/sendEmail.dart';
+import 'package:tourcompass/Login%20and%20Signup/signup.dart';
+import 'package:tourcompass/guide_home.dart';
+import 'package:tourcompass/forgetPassword/send_email.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/home.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class CustomTextField extends StatefulWidget {
   final IconData icon;
@@ -23,7 +25,7 @@ class CustomTextField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CustomTextFieldState createState() => _CustomTextFieldState();
+  State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
@@ -32,7 +34,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   String? _validateEmail(String? value) {
     // Email validation regex
     String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-    RegExp regExp = new RegExp(emailPattern);
+    RegExp regExp = RegExp(emailPattern);
 
     if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
       return 'Please enter a valid email';
@@ -48,25 +50,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Row(
           children: <Widget>[
             Icon(widget.icon),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Container(
                 height: 53,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFormField(
                   controller: widget.controller,
                   obscureText: obscureText && widget.isPassword,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     labelText: widget.hintText,
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(
@@ -91,14 +95,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ],
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         if (!widget.isPassword &&
             _validateEmail(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 32),
+            padding: const EdgeInsets.only(left: 40, top: 5),
             child: Text(
               _validateEmail(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
       ],
@@ -108,7 +112,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
 class LoginPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -150,27 +154,46 @@ class _LoginPageState extends State<LoginPage> {
         // Successful login
         var responseBody = jsonDecode(response.body);
         var token = responseBody['token'];
-        var userType =
-            responseBody['user']['userType'] as String?; // Add null check
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
-        if (token != null && userType != null) {
+        String userType = decodedToken['userType'];
+        String userid = decodedToken['id'];
+        String firstname = decodedToken['firstname'];
+        if (token != null) {
           // Save token and userType in SharedPreferences or another storage mechanism
           await prefs.setString('token', token);
-          await prefs.setString('userType', userType);
+          // await prefs.setString('userType', userType);
 
+          print("hello");
           // Navigate based on userType
           if (userType == 'traveller') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Logged in Successfullly!'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 3), // Optional: Set the duration
+              ),
+            );
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => Home(token: token),
+                builder: (context) =>
+                    Home(id: userid, firstname: firstname, userType: userType),
               ),
             );
           } else if (userType == 'guide') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Logged in Successfullly!'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 3), // Optional: Set the duration
+              ),
+            );
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => GuideHome(token: token),
+                builder: (context) => GuideHome(
+                    id: userid, firstname: firstname, userType: userType),
               ),
             );
           }
@@ -185,11 +208,12 @@ class _LoginPageState extends State<LoginPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Login Failed"),
-              content: Text("Invalid email or password. Please try again."),
+              title: const Text("Login Failed"),
+              content:
+                  const Text("Invalid email or password. Please try again."),
               actions: <Widget>[
                 TextButton(
-                  child: Text("OK"),
+                  child: const Text("OK"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -207,12 +231,12 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Login Error"),
-            content:
-                Text("An error occurred during login. Please try again later."),
+            title: const Text("Login Error"),
+            content: const Text(
+                "An error occurred during login. Please try again later."),
             actions: <Widget>[
               TextButton(
-                child: Text("OK"),
+                child: const Text("OK"),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -230,14 +254,14 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color.fromRGBO(255, 69, 0, 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -248,11 +272,11 @@ class _LoginPageState extends State<LoginPage> {
                       height: 150,
                     ),
                   ),
-                  Center(
+                  const Center(
                     child: Text(
                       "Navigate Your Journey with Experts",
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 225, 225, 225),
+                        color: Color.fromARGB(255, 225, 225, 225),
                         fontSize: 14,
                       ),
                       textAlign: TextAlign.center,
@@ -263,12 +287,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color.fromRGBO(249, 225, 211, 1),
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(80)),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     children: <Widget>[
                       Text(
@@ -279,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 60,
                       ),
                       Container(
@@ -295,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                                     hintText: "Email",
                                     controller: emailController,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 15,
                                   ),
                                   CustomTextField(
@@ -304,7 +328,7 @@ class _LoginPageState extends State<LoginPage> {
                                     controller: passwordController,
                                     isPassword: true,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   GestureDetector(
@@ -328,76 +352,51 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 40,
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      login(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors
-                                          .orange[900], // Background color
-                                      onPrimary: Colors.white, // Text color
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 15), // Button padding
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            25), // Button border radius
-                                      ),
-                                      minimumSize: Size(180,
-                                          10), // Minimum button size (width, height)
-                                    ),
-                                    child: Text(
-                                      "Log In",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
+                                  CustomButton(
+                                      text: "Log In",
+                                      onPressed: () {
+                                        login(context);
+                                      }),
+                                  const SizedBox(
                                     height: 24,
                                   ),
-                                  Container(
-                                    child: Center(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "Don't have an account?",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: const Color.fromARGB(
-                                                  255, 0, 0, 0),
-                                            ),
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        const Text(
+                                          "Don't have an account?",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Color.fromARGB(255, 0, 0, 0),
                                           ),
-                                          SizedBox(width: 10),
-                                          GestureDetector(
-                                            onTap: () {
-                                              // Navigate to SignupPage
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Signup(),
-                                                ),
-                                              );
-                                            },
-                                            // Adjust the spacing as needed
-                                            child: Text(
-                                              "Signup",
-                                              style: TextStyle(
-                                                color: Colors.orange[900],
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        GestureDetector(
+                                          onTap: () {
+                                            // Navigate to SignupPage
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => Signup(),
                                               ),
+                                            );
+                                          },
+                                          // Adjust the spacing as needed
+                                          child: Text(
+                                            "Signup",
+                                            style: TextStyle(
+                                              color: Colors.orange[900],
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],

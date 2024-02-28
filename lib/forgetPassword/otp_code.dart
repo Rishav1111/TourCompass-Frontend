@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tourcompass/forgetPassword/sendEmail.dart';
-import 'package:tourcompass/forgetPassword/NewPassword.dart';
+import 'package:tourcompass/button.dart';
+import 'package:tourcompass/forgetPassword/send_email.dart';
+import 'package:tourcompass/forgetPassword/new_password.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
@@ -178,31 +179,11 @@ class _VerifyOtpState extends State<VerifyOtp> {
                     height: 20,
                   ),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // You can also call otp(context, otpController.text) here if needed
-                        otp(context, ""); // Ensure the PIN is not empty
-                      },
-                      child: Text(
-                        'Verify',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.orange[900], // Background color
-                        onPrimary: Colors.white, // Text color
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15), // Button padding
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(25), // Button border radius
-                        ),
-                        minimumSize: Size(
-                            180, 10), // Minimum button size (width, height)
-                      ),
-                    ),
+                    child: CustomButton(
+                        text: "Verify",
+                        onPressed: () {
+                          otp(context, "");
+                        }),
                   ),
                   SizedBox(
                     height: 20,

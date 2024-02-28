@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
-import 'config.dart';
+import 'package:tourcompass/Login%20and%20Signup/verify_guideemail.dart';
+import 'package:tourcompass/button.dart';
+import '../config.dart';
 import 'login.dart';
 
 class Signup_guide extends StatefulWidget {
@@ -30,30 +32,6 @@ class _SignupPageState extends State<Signup_guide> {
   final TextEditingController guidePriceController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
 
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text("Guide, Successfully signed up!"),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the login page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void register(BuildContext context) async {
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
@@ -68,6 +46,25 @@ class _SignupPageState extends State<Signup_guide> {
         licensePhotoUrl == null ||
         userPhotoUrl == null) {
       print('Please fill in all the required fields.');
+      return;
+    }
+    // Check if password and confirmed password match
+    if (passwordController.text != confirmPasswordController.text) {
+      // Show a snackbar with an error message
+      setState(() {
+        passwordController.text = '';
+        confirmPasswordController.text = '';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Password and confirmed password do not match.",
+            style: TextStyle(color: Colors.white), // Set text color
+          ),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.red, // Set background color to red
+        ),
+      );
       return;
     }
 
@@ -90,15 +87,47 @@ class _SignupPageState extends State<Signup_guide> {
           'bio': bioController.text,
         }),
       );
+      var jsonRespone = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        _showSuccessDialog(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifyGuideEmailOtp(
+              email: emailController.text,
+              firstName: firstNameController.text,
+              lastName: lastNameController.text,
+              password: passwordController.text,
+              phoneNumber: phoneNumberController.text,
+              licenseNumber: licenseNumberController.text,
+              expertPlace: placeOfExpertiseController.text,
+              guidePrice: guidePriceController.text,
+              licensePhoto: licensePhotoUrl,
+              guidePhoto: userPhotoUrl,
+              bio: bioController.text,
+            ),
+          ),
+        );
       } else {
         print('Failed to register user: ${response.statusCode}');
+        showSnackbar(context, '${jsonRespone['msg']}');
       }
     } catch (e) {
       print('Exception during registration: $e');
     }
+  }
+
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white), // Set text color
+        ),
+        duration: Duration(seconds: 3),
+        backgroundColor: Colors.red, // Set background color to red
+      ),
+    );
   }
 
   Future<void> _uploadPhoto(String type) async {
@@ -318,30 +347,11 @@ class _SignupPageState extends State<Signup_guide> {
                                     SizedBox(
                                       height: 30,
                                     ),
-                                    Container(
-                                      height: 40,
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 70),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: Colors.orange[900],
-                                      ),
-                                      child: InkWell(
-                                        onTap: () {
+                                    CustomButton(
+                                        text: "Sign Up",
+                                        onPressed: () {
                                           register(context);
-                                        },
-                                        child: Center(
-                                          child: Text(
-                                            "Sign Up",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                        }),
                                     SizedBox(
                                       height: 5,
                                     ),
@@ -418,6 +428,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       borderSide: BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(
@@ -486,11 +498,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   String? _validatePassword(String value) {
     // Password validation regex
-    String passwordPattern = r'^.{8,}$';
+    String passwordPattern =
+        r'^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
     RegExp regExp = new RegExp(passwordPattern);
 
     if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
-      return 'Password must contain at least 8 characters';
+      return 'Password must contain at least 8 characters, one uppercase letter, and one special character';
     }
     return null;
   }
