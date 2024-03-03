@@ -6,8 +6,9 @@ import 'package:tourcompass/button.dart';
 
 class Profile extends StatefulWidget {
   final String id;
+  final token;
 
-  const Profile({required this.id, super.key});
+  const Profile({required this.id, required this.token, super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -28,7 +29,9 @@ class _ProfileState extends State<Profile> {
   Future<void> fetchData() async {
     try {
       final response = await http.get(
-          Uri.parse('http://192.168.1.3:5000/api/getTraveller/${widget.id}'));
+        Uri.parse('http://192.168.1.3:5000/api/getTraveller/${widget.id}'),
+        headers: {'Authorization': 'Bearer ${widget.token}'},
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -39,8 +42,9 @@ class _ProfileState extends State<Profile> {
           phoneNumber = data['phoneNumber'];
         });
       } else {
-        // Handle error
-        print('Failed to load user profile data');
+        print(
+            'Failed to load user profile data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (error) {
       print('Error fetching user profile data: $error');
@@ -55,7 +59,7 @@ class _ProfileState extends State<Profile> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -78,8 +82,9 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 227, 217, 1),
+      // backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 70,
         automaticallyImplyLeading: false,
         centerTitle: true,
         leading: IconButton(
@@ -124,6 +129,7 @@ class _ProfileState extends State<Profile> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => EditProfile(
+                        token: widget.token,
                         id: widget.id,
                         firstName: firstname,
                         lastName: lastname,

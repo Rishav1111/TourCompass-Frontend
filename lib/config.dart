@@ -1,11 +1,13 @@
-final url = 'http://192.168.1.3:5000/api/';
+const url = 'http://192.168.1.3:5000/api/';
 // final url = 'http://10.22.77.190:5000/api/';
+const adminUrl = 'http://localhost:5000/api/';
 
-final signupTraveller = url + 'signupTraveller';
-final loginUser = url + 'login';
-final signupGuide = url + 'signupGuide';
-final forgetPassword = url + 'forgetpassword';
-final verifypin = url + 'verifyPin';
-final travellerverifyPin = url + 'travellerverifyPin';
-final guideverifyPin = url + 'guideverifyPin';
-final resetpassword = url + 'resetpassword';
+const signupTraveller = '${url}signupTraveller';
+const loginUser = '${url}login';
+const signupGuide = '${url}signupGuide';
+const forgetPassword = '${url}forgetpassword';
+const verifypin = '${url}verifyPin';
+const travellerverifyPin = '${url}travellerverifyPin';
+const guideverifyPin = '${url}guideverifyPin';
+const resetpassword = '${url}resetpassword';
+const adminLogin = '${adminUrl}adminlogin';

@@ -1,61 +1,44 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tourcompass/Settings/edit_profile.dart';
 import 'package:tourcompass/Settings/guide_edit_profile.dart';
 import 'package:tourcompass/button.dart';
 
 class GuideProfile extends StatefulWidget {
   final String id;
+  final String token;
 
-  const GuideProfile({required this.id, super.key});
+  const GuideProfile({required this.id, required this.token, Key? key})
+      : super(key: key);
 
   @override
   State<GuideProfile> createState() => _GuideProfileState();
 }
 
 class _GuideProfileState extends State<GuideProfile> {
-  String firstname = "";
-  String lastname = "";
-  String email = "";
-  String phoneNumber = "";
-  int licenseNumber = 0;
-  int guidePrice = 0;
-  String bio = "";
-  String licensePhotoUrl = "";
+  late Future<Map<String, dynamic>> _profileData;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    _profileData = fetchData();
   }
 
-  Future<void> fetchData() async {
+  Future<Map<String, dynamic>> fetchData() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://192.168.1.3:5000/api/getGuide/${widget.id}'));
+      final response = await http.get(
+        Uri.parse('http://192.168.1.3:5000/api/getGuide/${widget.id}'),
+        headers: {'Authorization': 'Bearer ${widget.token}'},
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        setState(() {
-          firstname = data['firstname'];
-          lastname = data['lastname'];
-          email = data['email'];
-          phoneNumber = data['phoneNumber'];
-          licenseNumber = data['licenseNumber'];
-          guidePrice = data['guidePrice'];
-          bio = data['bio'];
-          licensePhotoUrl = data['licensePhoto'];
-        });
-        print('License Photo: $licensePhotoUrl');
-        // print('Guide Price: $guidePrice');
-        // print('Bio: $bio');
+        return data;
       } else {
-        // Handle error
-        print('Failed to load user profile data');
+        throw Exception('Failed to load user profile data');
       }
     } catch (error) {
-      print('Error fetching user profile data: $error');
+      throw Exception('Error fetching user profile data: $error');
     }
   }
 
@@ -67,7 +50,7 @@ class _GuideProfileState extends State<GuideProfile> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -80,7 +63,7 @@ class _GuideProfileState extends State<GuideProfile> {
         ),
         Container(
           height: 1.2,
-          color: Color.fromARGB(255, 125, 122, 122),
+          color: const Color.fromARGB(255, 125, 122, 122),
           margin: const EdgeInsets.symmetric(vertical: 1),
         ),
       ],
@@ -90,8 +73,9 @@ class _GuideProfileState extends State<GuideProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 227, 217, 1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 70,
         automaticallyImplyLeading: false,
         centerTitle: true,
         leading: IconButton(
@@ -119,50 +103,79 @@ class _GuideProfileState extends State<GuideProfile> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ClipOval(
-                child: Image.network(
-                  licensePhotoUrl,
-                  height: 150,
-                  width: 150,
-                  fit: BoxFit.cover,
+      body: FutureBuilder(
+        future: _profileData,
+        builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final data = snapshot.data!;
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            ClipOval(
+                              child: Image.network(
+                                data['licensePhoto'],
+                                height: 150,
+                                width: 150,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              "Edit Photo",
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    buildInfoRow('First Name', data['firstname']),
+                    buildInfoRow('Last Name', data['lastname']),
+                    buildInfoRow('Email', data['email']),
+                    buildInfoRow('Phone Number', data['phoneNumber']),
+                    buildInfoRow('License', data['licenseNumber'].toString()),
+                    buildInfoRow('Guide Price', data['guidePrice'].toString()),
+                    buildInfoRow('Bio', data['bio']),
+                    const SizedBox(height: 30),
+                    CustomButton(
+                      text: "Edit",
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GuideEditProfile(
+                              token: widget.token,
+                              id: widget.id,
+                              firstName: data['firstname'],
+                              lastName: data['lastname'],
+                              email: data['email'],
+                              phoneNumber: data['phoneNumber'],
+                              licenseNumber: data['licenseNumber'],
+                              guidePrice: data['guidePrice'],
+                              bio: data['bio'],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
-              buildInfoRow('First Name', firstname),
-              buildInfoRow('Last Name', lastname),
-              buildInfoRow('Email', email),
-              buildInfoRow('Phone Number', phoneNumber),
-              buildInfoRow('License', licenseNumber.toString()),
-              buildInfoRow('Guide Price', guidePrice.toString()),
-              buildInfoRow('Bio', bio),
-              const SizedBox(height: 30),
-              CustomButton(
-                  text: "Edit",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GuideEditProfile(
-                          id: widget.id,
-                          firstName: firstname,
-                          lastName: lastname,
-                          email: email,
-                          phoneNumber: phoneNumber,
-                          licenseNumber: licenseNumber,
-                          guidePrice: guidePrice,
-                          bio: bio,
-                        ),
-                      ),
-                    );
-                  }),
-            ],
-          ),
-        ),
+            );
+          }
+        },
       ),
     );
   }

@@ -53,7 +53,7 @@ class __NewPasswordState extends State<NewPassword> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Password reset successfully.'),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
             duration: Duration(seconds: 3), // Optional: Set the duration
           ),
         );
@@ -87,7 +87,7 @@ class __NewPasswordState extends State<NewPassword> {
       resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
-          color: Color.fromRGBO(249, 225, 211, 1),
+          color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

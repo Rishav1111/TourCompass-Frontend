@@ -58,6 +58,7 @@ class CustomTextField extends StatelessWidget {
 }
 
 class GuideEditProfile extends StatefulWidget {
+  final String token;
   final String id;
   final String firstName;
   final String lastName;
@@ -69,6 +70,7 @@ class GuideEditProfile extends StatefulWidget {
 
   GuideEditProfile({
     required this.id,
+    required this.token,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -113,6 +115,7 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
       final http.Response response = await http.put(
         Uri.parse(apiUrl),
         headers: <String, String>{
+          'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),
@@ -127,6 +130,7 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
           MaterialPageRoute(
             builder: (context) => GuideProfile(
               id: widget.id,
+              token: widget.token,
             ),
           ),
         );
@@ -178,8 +182,9 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(255, 227, 217, 1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 70,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,

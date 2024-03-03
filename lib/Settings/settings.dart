@@ -44,13 +44,15 @@ class SettingGestureRow extends StatelessWidget {
 }
 
 class Setting extends StatefulWidget {
-  final String? id;
-  final String? userType;
+  final String id;
+  final String userType;
+  final String token;
 
   const Setting({
     super.key,
-    this.id,
-    this.userType,
+    required this.token,
+    required this.id,
+    required this.userType,
   });
 
   State<Setting> createState() => _SettingState();
@@ -62,7 +64,7 @@ class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 227, 217, 1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 70,
@@ -101,7 +103,7 @@ class _SettingState extends State<Setting> {
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 221, 206, 198),
+                color: Color.fromARGB(255, 208, 207, 207),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -115,7 +117,8 @@ class _SettingState extends State<Setting> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => Profile(
-                              id: widget.id ?? "DefaultID",
+                              id: widget.id,
+                              token: widget.token,
                             ),
                           ),
                         );
@@ -124,7 +127,8 @@ class _SettingState extends State<Setting> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => GuideProfile(
-                              id: widget.id ?? "DefaultID",
+                              id: widget.id,
+                              token: widget.token,
                             ),
                           ),
                         );
@@ -134,7 +138,7 @@ class _SettingState extends State<Setting> {
                   const SizedBox(height: 8),
                   Container(
                     height: 1.2,
-                    color: const Color.fromRGBO(122, 122, 122, 1),
+                    color: Color.fromARGB(255, 54, 54, 54),
                     margin: const EdgeInsets.symmetric(vertical: 2),
                   ),
                   const SizedBox(height: 8),
@@ -144,7 +148,10 @@ class _SettingState extends State<Setting> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ChangePassword(),
+                          builder: (context) => ChangePassword(
+                            id: widget.id,
+                            token: widget.token,
+                          ),
                         ),
                       );
                     },
@@ -166,7 +173,7 @@ class _SettingState extends State<Setting> {
               height: 60,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 221, 206, 198),
+                color: const Color.fromARGB(255, 208, 207, 207),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -208,7 +215,7 @@ class _SettingState extends State<Setting> {
               height: 60,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 221, 206, 198),
+                color: const Color.fromARGB(255, 208, 207, 207),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Column(

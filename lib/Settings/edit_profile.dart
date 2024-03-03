@@ -23,7 +23,7 @@ class CustomTextField extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -57,6 +57,7 @@ class CustomTextField extends StatelessWidget {
 
 class EditProfile extends StatefulWidget {
   final String id;
+  final String token;
   final String firstName;
   final String lastName;
   final String email;
@@ -64,6 +65,7 @@ class EditProfile extends StatefulWidget {
 
   EditProfile({
     required this.id,
+    required this.token,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -99,6 +101,7 @@ class _EditProfileState extends State<EditProfile> {
       final http.Response response = await http.put(
         Uri.parse(apiUrl),
         headers: <String, String>{
+          'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),
@@ -112,6 +115,7 @@ class _EditProfileState extends State<EditProfile> {
           context,
           MaterialPageRoute(
             builder: (context) => Profile(
+              token: widget.token,
               id: widget.id,
             ),
           ),
@@ -161,8 +165,9 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(255, 227, 217, 1),
+      backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
+        toolbarHeight: 70,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,

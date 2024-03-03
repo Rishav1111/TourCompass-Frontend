@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tourcompass/button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -40,8 +42,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   obscureText: obscureText && widget.isPassword,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(12)),
+                      borderSide: BorderSide(color: Colors.black),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     labelText: widget.hintText,
                     hintStyle: TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(
@@ -75,12 +78,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ],
         ),
-        if (widget.isPassword &&
-            _validatePassword(widget.controller.text) != null)
+        if (widget.isPassword)
           Padding(
             padding: EdgeInsets.only(left: 40, top: 5),
             child: Text(
-              _validatePassword(widget.controller.text)!,
+              widget.hintText == "Current Password"
+                  ? ""
+                  : _validatePassword(widget.controller.text) ?? "",
               style: TextStyle(color: Colors.red),
             ),
           ),
@@ -102,23 +106,97 @@ class _CustomTextFieldState extends State<CustomTextField> {
 }
 
 class ChangePassword extends StatefulWidget {
-  const ChangePassword({Key? key}) : super(key: key);
+  final String id;
+  final String token;
+
+  const ChangePassword({
+    required this.id,
+    required this.token,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ChangePassword> createState() => _ChangePasswordState();
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
+  final TextEditingController currentPasswordController =
       TextEditingController();
-  bool isPasswordVisible = false;
-  bool isConfirmPasswordVisible = false;
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmNewPasswordController =
+      TextEditingController();
+
+  bool isCurrentPasswordVisible = false;
+  bool isNewPasswordVisible = false;
+  bool isConfirmNewPasswordVisible = false;
+  void _showSnackBar(String message, {Color? backgroundColor}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: backgroundColor,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Future<void> changePassword() async {
+    // Validate input
+
+    if (currentPasswordController.text == newPasswordController.text) {
+      _showSnackBar("New password must be different from the current password.",
+          backgroundColor: Colors.red);
+      return;
+    }
+    if (newPasswordController.text != confirmNewPasswordController.text) {
+      _showSnackBar("New password and confirm password do not match.",
+          backgroundColor: Colors.red);
+      return;
+    }
+
+    final Map<String, dynamic> requestData = {
+      'currentPassword': currentPasswordController.text,
+      'newPassword': newPasswordController.text,
+      'confirmNewPassword': confirmNewPasswordController.text,
+    };
+
+    try {
+      final http.Response response = await http.put(
+        Uri.parse('http://192.168.1.3:5000/api/changePassword/${widget.id}'),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestData),
+      );
+
+      if (response.statusCode == 200) {
+        _showSnackBar('Password changed successfully',
+            backgroundColor: Colors.green);
+        print('Password changed successfully');
+      } else if (response.statusCode == 401) {
+        _showSnackBar('Incorrect current password',
+            backgroundColor: Colors.red);
+        print('Incorrect current password');
+      } else {
+        // Handle other API errors
+        _showSnackBar(
+            'Failed to change password. Status code: ${response.body}');
+        print('Failed to change password. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (error) {
+      // Handle network or other errors
+      _showSnackBar('Error changing password: $error');
+      print('Error changing password: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 227, 217, 1),
+      backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
+        toolbarHeight: 70,
         automaticallyImplyLeading: false,
         centerTitle: true,
         leading: IconButton(
@@ -157,31 +235,38 @@ class _ChangePasswordState extends State<ChangePassword> {
             CustomTextField(
               icon: Icons.lock,
               hintText: "Current Password",
-              controller: passwordController,
+              controller: currentPasswordController,
               isPassword: true,
             ),
             const SizedBox(
-              height: 15,
+              height: 5,
             ),
             CustomTextField(
               icon: Icons.lock,
               hintText: "New Password",
-              controller: passwordController,
+              controller: newPasswordController,
               isPassword: true,
             ),
             const SizedBox(
-              height: 15,
+              height: 5,
             ),
             CustomTextField(
               icon: Icons.lock,
-              hintText: "Confirmed New Password",
-              controller: confirmPasswordController,
+              hintText: "Confirm New Password",
+              controller: confirmNewPasswordController,
               isPassword: true,
             ),
             const SizedBox(
               height: 30,
             ),
-            Center(child: CustomButton(text: "Change", onPressed: () {})),
+            Center(
+              child: CustomButton(
+                text: "Change",
+                onPressed: () {
+                  changePassword();
+                },
+              ),
+            ),
           ],
         ),
       ),

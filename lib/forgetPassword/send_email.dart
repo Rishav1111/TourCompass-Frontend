@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tourcompass/Login%20and%20Signup/login.dart';
 import 'package:http/http.dart' as http;
-import 'package:tourcompass/button.dart';
 import 'dart:convert';
+import 'package:tourcompass/Login%20and%20Signup/login.dart';
+import 'package:tourcompass/button.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/forgetPassword/otp_code.dart';
 
@@ -13,6 +13,7 @@ class SendEmail extends StatefulWidget {
 
 class _SendEmailState extends State<SendEmail> {
   final TextEditingController emailController = TextEditingController();
+  bool isLoading = false; // Track whether the email is currently being sent
 
   void _showSuccessDialog(BuildContext context) {
     showDialog(
@@ -43,11 +44,36 @@ class _SendEmailState extends State<SendEmail> {
     );
   }
 
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text("Sending email..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void email(BuildContext context) async {
-    if (emailController.text.isEmpty) {
-      print("Email is empty");
+    if (emailController.text.isEmpty || isLoading) {
+      print("Email is empty or email is already being sent.");
       return;
     }
+
+    setState(() {
+      isLoading = true; // Set loading state to true when sending email
+    });
+
+    _showLoadingDialog(context); // Show loading dialog
 
     var emailBody = {
       'email': emailController.text,
@@ -58,17 +84,17 @@ class _SendEmailState extends State<SendEmail> {
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(emailBody));
 
+      Navigator.pop(context); // Dismiss loading dialog
+
       if (response.statusCode == 200) {
         _showSuccessDialog(context);
-
-        // Email sent successfully
-
         print("Email sent");
       } else {
         setState(() {
+          isLoading =
+              false; // Set loading state to false if email sending failed
           emailController.text = '';
         });
-        // Email not sent
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to send email. Please try again.'),
@@ -78,7 +104,11 @@ class _SendEmailState extends State<SendEmail> {
         print("Email not sent");
       }
     } catch (e) {
-      // Handle exceptions
+      setState(() {
+        isLoading =
+            false; // Set loading state to false if email sending failed due to an error
+      });
+      Navigator.pop(context); // Dismiss loading dialog
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('An error occurred. Please try again.'),
@@ -94,7 +124,7 @@ class _SendEmailState extends State<SendEmail> {
       resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
-          color: Color.fromRGBO(249, 225, 211, 1),
+          color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

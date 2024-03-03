@@ -290,7 +290,7 @@ class _SignupState extends State<Signup> {
               // Wrap with SingleChildScrollView
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(249, 225, 211, 1),
+                  color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(80)),
                 ),
                 child: SingleChildScrollView(

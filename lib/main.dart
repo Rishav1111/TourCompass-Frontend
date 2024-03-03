@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:tourcompass/Login%20and%20Signup/admin_login.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
 
 void main() => runApp(MyApp());
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => AdminLoginPage()),
         );
       },
     );

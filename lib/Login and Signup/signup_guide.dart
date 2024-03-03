@@ -204,7 +204,7 @@ class _SignupPageState extends State<Signup_guide> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(249, 225, 211, 1),
+                  color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(80)),
                 ),
                 child: SingleChildScrollView(
@@ -297,18 +297,31 @@ class _SignupPageState extends State<Signup_guide> {
                                     Row(
                                       children: <Widget>[
                                         Expanded(
-                                          child: SizedBox(
-                                            height: 53,
-                                            child: ElevatedButton.icon(
-                                              onPressed: () {
-                                                _uploadPhoto("license");
-                                              },
-                                              icon: Icon(Icons.camera_alt),
-                                              label: Text(
+                                          child: Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                35, 0, 10, 0),
+                                            child: SizedBox(
+                                              height: 53,
+                                              child: ElevatedButton.icon(
+                                                icon: Icon(Icons.camera_alt),
+                                                onPressed: () {
+                                                  _uploadPhoto("license");
+                                                },
+                                                label: Text(
                                                   licensePhotoUrl == null
                                                       ? "Upload License Photo"
                                                       : path.basename(
-                                                          licensePhotoUrl!)),
+                                                          licensePhotoUrl!),
+                                                ),
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all<
+                                                          Color>(
+                                                    Colors
+                                                        .grey, // Change this to the desired color
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -320,17 +333,31 @@ class _SignupPageState extends State<Signup_guide> {
                                     Row(
                                       children: <Widget>[
                                         Expanded(
-                                          child: SizedBox(
-                                            height: 53,
-                                            child: ElevatedButton.icon(
-                                              onPressed: () {
-                                                _uploadPhoto("user");
-                                              },
-                                              icon: Icon(Icons.camera_alt),
-                                              label: Text(userPhotoUrl == null
-                                                  ? "Upload Your Photo"
-                                                  : path
-                                                      .basename(userPhotoUrl!)),
+                                          child: Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                35, 0, 10, 0),
+                                            child: SizedBox(
+                                              height: 53,
+                                              child: ElevatedButton.icon(
+                                                onPressed: () {
+                                                  _uploadPhoto("user");
+                                                },
+                                                icon: Icon(Icons.camera_alt),
+                                                label: Text(
+                                                  userPhotoUrl == null
+                                                      ? "Upload Your Photo"
+                                                      : path.basename(
+                                                          userPhotoUrl!),
+                                                ),
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all<
+                                                          Color>(
+                                                    Colors
+                                                        .grey, // Change this to the desired color
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),

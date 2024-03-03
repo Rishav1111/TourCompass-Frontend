@@ -177,8 +177,11 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    Home(id: userid, firstname: firstname, userType: userType),
+                builder: (context) => Home(
+                    id: userid,
+                    firstname: firstname,
+                    userType: userType,
+                    token: token),
               ),
             );
           } else if (userType == 'guide') {
@@ -193,7 +196,11 @@ class _LoginPageState extends State<LoginPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => GuideHome(
-                    id: userid, firstname: firstname, userType: userType),
+                  id: userid,
+                  firstname: firstname,
+                  userType: userType,
+                  token: token,
+                ),
               ),
             );
           }
@@ -288,7 +295,7 @@ class _LoginPageState extends State<LoginPage> {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Color.fromRGBO(249, 225, 211, 1),
+                  color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(80)),
                 ),
                 child: Padding(

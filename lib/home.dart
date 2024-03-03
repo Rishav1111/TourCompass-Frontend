@@ -9,9 +9,11 @@ class Home extends StatefulWidget {
   final id;
   final firstname;
   final userType;
+  final token;
   const Home(
       {required this.id,
       required this.firstname,
+      required this.token,
       required this.userType,
       Key? key})
       : super(key: key);
@@ -32,6 +34,7 @@ class HomeState extends State<Home> {
       HomeContent(fName: widget.firstname),
       const OrderPage(),
       Setting(
+        token: widget.token,
         id: widget.id,
         userType: widget.userType,
       ),
@@ -84,7 +87,7 @@ class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 227, 217, 1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 70,
