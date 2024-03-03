@@ -3,7 +3,7 @@ import 'package:tourcompass/Login%20and%20Signup/login.dart';
 import 'package:tourcompass/Settings/change_password.dart';
 import 'package:tourcompass/Settings/guide_profile.dart';
 import 'package:tourcompass/Settings/profile_info.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/button.dart';
 
 class SettingGestureRow extends StatelessWidget {
   final String label;

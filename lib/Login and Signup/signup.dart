@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Login%20and%20Signup/verify_travelleremail.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
 import 'package:tourcompass/Login%20and%20Signup/signup_guide.dart';
@@ -27,7 +30,7 @@ class CustomTextField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CustomTextFieldState createState() => _CustomTextFieldState();
+  State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
@@ -41,11 +44,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Row(
           children: <Widget>[
             Icon(widget.icon),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Container(
                 height: 53,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextField(
                   controller: widget.controller,
                   obscureText: obscureText && widget.isPassword,
@@ -54,16 +57,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       : TextInputType.text,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(12)),
                     labelText: widget.hintText,
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(
@@ -91,28 +94,28 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         if (widget.isEmail && _validateEmail(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 45, top: 5),
+            padding: const EdgeInsets.only(left: 45, top: 5),
             child: Text(
               _validateEmail(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         if (widget.isPassword &&
             _validatePassword(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 45, top: 5),
+            padding: const EdgeInsets.only(left: 45, top: 5),
             child: Text(
               _validatePassword(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         if (widget.isPhoneNumber &&
             _validatePhoneNumber(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 45, top: 5),
+            padding: const EdgeInsets.only(left: 45, top: 5),
             child: Text(
               _validatePhoneNumber(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
       ],
@@ -178,7 +181,8 @@ class _SignupState extends State<Signup> {
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
       // Show a snackbar with an error message
-      showSnackbar(context, 'Please fill in all the required fields.');
+      showCustomSnackBar(context, 'Please fill in all the required fields.',
+          backgroundColor: Colors.red);
       return;
     }
 
@@ -189,7 +193,8 @@ class _SignupState extends State<Signup> {
         passwordController.text = '';
         confirmPasswordController.text = '';
       });
-      showSnackbar(context, 'Password and confirmed password do not match.');
+      showCustomSnackBar(context, 'Password do not match.',
+          backgroundColor: Colors.red);
       return;
     }
 
@@ -226,28 +231,13 @@ class _SignupState extends State<Signup> {
           ),
         );
       } else {
-        // Registration failed
-        print('Failed to register user: ${response.statusCode}');
-        showSnackbar(context, '${jsonRespone['msg']}');
+        showCustomSnackBar(context, '${jsonRespone['msg']}',
+            backgroundColor: Colors.red);
       }
     } catch (e) {
-      print('Exception during registration: $e');
-      showSnackbar(context, 'Exception during registration: $e');
+      showCustomSnackBar(context, 'Exception during registration: $e',
+          backgroundColor: Colors.red);
     }
-  }
-
-// Function to show a snackbar with a message
-  void showSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(color: Colors.white), // Set text color
-        ),
-        duration: Duration(seconds: 3),
-        backgroundColor: Colors.red, // Set background color to red
-      ),
-    );
   }
 
   @override
@@ -255,14 +245,14 @@ class _SignupState extends State<Signup> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color.fromRGBO(255, 69, 0, 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -273,11 +263,11 @@ class _SignupState extends State<Signup> {
                       height: 110,
                     ),
                   ),
-                  Center(
+                  const Center(
                     child: Text(
                       "Navigate Your Journey with Experts",
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 225, 225, 225),
+                        color: Color.fromARGB(255, 225, 225, 225),
                         fontSize: 14,
                       ),
                       textAlign: TextAlign.center,
@@ -289,13 +279,13 @@ class _SignupState extends State<Signup> {
             Expanded(
               // Wrap with SingleChildScrollView
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(80)),
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       children: <Widget>[
                         Text(
@@ -306,7 +296,7 @@ class _SignupState extends State<Signup> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Column(
@@ -321,13 +311,13 @@ class _SignupState extends State<Signup> {
                                     hintText: "Firstname",
                                     controller: firstNameController,
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   CustomTextField(
                                     icon: Icons.account_circle,
                                     hintText: "Lastname",
                                     controller: lastNameController,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   CustomTextField(
@@ -336,7 +326,7 @@ class _SignupState extends State<Signup> {
                                     controller: emailController,
                                     isEmail: true,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   CustomTextField(
@@ -345,7 +335,7 @@ class _SignupState extends State<Signup> {
                                     controller: phoneNumberController,
                                     isPhoneNumber: true,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   CustomTextField(
@@ -354,7 +344,7 @@ class _SignupState extends State<Signup> {
                                     controller: passwordController,
                                     isPassword: true,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   CustomTextField(
@@ -363,7 +353,7 @@ class _SignupState extends State<Signup> {
                                     controller: confirmPasswordController,
                                     isPassword: true,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   ),
                                   CustomButton(
@@ -371,50 +361,47 @@ class _SignupState extends State<Signup> {
                                       onPressed: () {
                                         register(context);
                                       }),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   ),
-                                  Container(
-                                    child: Center(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "Don't have an account?",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: const Color.fromARGB(
-                                                  255, 0, 0, 0),
-                                            ),
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        const Text(
+                                          "Don't have an account?",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Color.fromARGB(255, 0, 0, 0),
                                           ),
-                                          SizedBox(width: 10),
-                                          GestureDetector(
-                                            onTap: () {
-                                              // Navigate to SignupPage
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      LoginPage(),
-                                                ),
-                                              );
-                                            },
-                                            // Adjust the spacing as needed
-                                            child: Text(
-                                              "Login",
-                                              style: TextStyle(
-                                                color: Colors.orange[900],
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        GestureDetector(
+                                          onTap: () {
+                                            // Navigate to SignupPage
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoginPage(),
                                               ),
+                                            );
+                                          },
+                                          // Adjust the spacing as needed
+                                          child: Text(
+                                            "Login",
+                                            style: TextStyle(
+                                              color: Colors.orange[900],
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5,
                                   ),
                                   Row(
@@ -431,7 +418,7 @@ class _SignupState extends State<Signup> {
                                             ),
                                           );
                                         },
-                                        child: Text(
+                                        child: const Text(
                                           "Signup as a Tour Guide",
                                           style: TextStyle(
                                             color: Colors.black,

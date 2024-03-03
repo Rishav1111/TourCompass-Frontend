@@ -1,18 +1,21 @@
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
+
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Login%20and%20Signup/verify_guideemail.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
 import '../config.dart';
-import 'login.dart';
 
 class Signup_guide extends StatefulWidget {
+  const Signup_guide({super.key});
+
   @override
-  _SignupPageState createState() => _SignupPageState();
+  State<Signup_guide> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<Signup_guide> {
@@ -45,7 +48,8 @@ class _SignupPageState extends State<Signup_guide> {
         bioController.text.isEmpty ||
         licensePhotoUrl == null ||
         userPhotoUrl == null) {
-      print('Please fill in all the required fields.');
+      showCustomSnackBar(context, 'Please fill in all the required fields.',
+          backgroundColor: Colors.red);
       return;
     }
     // Check if password and confirmed password match
@@ -55,16 +59,8 @@ class _SignupPageState extends State<Signup_guide> {
         passwordController.text = '';
         confirmPasswordController.text = '';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Password and confirmed password do not match.",
-            style: TextStyle(color: Colors.white), // Set text color
-          ),
-          duration: Duration(seconds: 3),
-          backgroundColor: Colors.red, // Set background color to red
-        ),
-      );
+      showCustomSnackBar(context, "Password do not match.",
+          backgroundColor: Colors.red);
       return;
     }
 
@@ -109,25 +105,13 @@ class _SignupPageState extends State<Signup_guide> {
           ),
         );
       } else {
-        print('Failed to register user: ${response.statusCode}');
-        showSnackbar(context, '${jsonRespone['msg']}');
+        showCustomSnackBar(context, '${jsonRespone['msg']}',
+            backgroundColor: Colors.red);
+        return;
       }
     } catch (e) {
       print('Exception during registration: $e');
     }
-  }
-
-  void showSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(color: Colors.white), // Set text color
-        ),
-        duration: Duration(seconds: 3),
-        backgroundColor: Colors.red, // Set background color to red
-      ),
-    );
   }
 
   Future<void> _uploadPhoto(String type) async {
@@ -154,6 +138,9 @@ class _SignupPageState extends State<Signup_guide> {
               userPhotoUrl = decodedData['secure_url'];
             }
           });
+          showCustomSnackBar(context, 'Image Uploaded Successfully',
+              backgroundColor: Colors.green);
+          return;
         } else {
           print('Failed to upload image: ${response.statusCode}');
         }
@@ -170,14 +157,14 @@ class _SignupPageState extends State<Signup_guide> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color.fromRGBO(255, 69, 0, 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -188,11 +175,11 @@ class _SignupPageState extends State<Signup_guide> {
                       height: 110,
                     ),
                   ),
-                  Center(
+                  const Center(
                     child: Text(
                       "Navigate Your Journey with Experts",
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 225, 225, 225),
+                        color: Color.fromARGB(255, 225, 225, 225),
                         fontSize: 14,
                       ),
                       textAlign: TextAlign.center,
@@ -203,13 +190,13 @@ class _SignupPageState extends State<Signup_guide> {
             ),
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(80)),
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       children: <Widget>[
                         Text(
@@ -220,173 +207,172 @@ class _SignupPageState extends State<Signup_guide> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
-                        Container(
-                          child: Column(
-                            children: <Widget>[
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: <Widget>[
-                                    CustomTextField(
-                                      icon: Icons.account_circle,
-                                      hintText: "First Name",
-                                      controller: firstNameController,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      icon: Icons.account_circle,
-                                      hintText: "Last Name",
-                                      controller: lastNameController,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      icon: Icons.email,
-                                      hintText: "Email",
-                                      controller: emailController,
-                                      isEmail: true,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      icon: Icons.phone,
-                                      hintText: "Phone Number",
-                                      controller: phoneNumberController,
-                                      isPhoneNumber: true,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      icon: Icons.lock,
-                                      hintText: "Password",
-                                      controller: passwordController,
-                                      isPassword: true,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      icon: Icons.lock,
-                                      hintText: "Confirm Password",
-                                      controller: confirmPasswordController,
-                                      isPassword: true,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      icon: Icons.credit_card,
-                                      hintText: "Guide License No.",
-                                      controller: licenseNumberController,
-                                    ),
-                                    SizedBox(height: 10),
-                                    CustomTextField(
-                                      controller: placeOfExpertiseController,
-                                      icon: Icons.place,
-                                      hintText:
-                                          "Name of place of your expertise",
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    CustomTextField(
-                                      controller: guidePriceController,
-                                      icon: Icons.attach_money,
-                                      hintText: "Guide Price",
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                35, 0, 10, 0),
-                                            child: SizedBox(
-                                              height: 53,
-                                              child: ElevatedButton.icon(
-                                                icon: Icon(Icons.camera_alt),
-                                                onPressed: () {
-                                                  _uploadPhoto("license");
-                                                },
-                                                label: Text(
-                                                  licensePhotoUrl == null
-                                                      ? "Upload License Photo"
-                                                      : path.basename(
-                                                          licensePhotoUrl!),
-                                                ),
-                                                style: ButtonStyle(
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                          Color>(
-                                                    Colors
-                                                        .grey, // Change this to the desired color
-                                                  ),
+                        Column(
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: <Widget>[
+                                  CustomTextField(
+                                    icon: Icons.account_circle,
+                                    hintText: "First Name",
+                                    controller: firstNameController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    icon: Icons.account_circle,
+                                    hintText: "Last Name",
+                                    controller: lastNameController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    icon: Icons.email,
+                                    hintText: "Email",
+                                    controller: emailController,
+                                    isEmail: true,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    icon: Icons.phone,
+                                    hintText: "Phone Number",
+                                    controller: phoneNumberController,
+                                    isPhoneNumber: true,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    icon: Icons.lock,
+                                    hintText: "Password",
+                                    controller: passwordController,
+                                    isPassword: true,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    icon: Icons.lock,
+                                    hintText: "Confirm Password",
+                                    controller: confirmPasswordController,
+                                    isPassword: true,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    icon: Icons.credit_card,
+                                    hintText: "Guide License No.",
+                                    controller: licenseNumberController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextField(
+                                    controller: placeOfExpertiseController,
+                                    icon: Icons.place,
+                                    hintText: "Name of place of your expertise",
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CustomTextField(
+                                    controller: guidePriceController,
+                                    icon: Icons.attach_money,
+                                    hintText: "Guide Price",
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              35, 0, 10, 0),
+                                          child: SizedBox(
+                                            height: 53,
+                                            child: ElevatedButton.icon(
+                                              icon:
+                                                  const Icon(Icons.camera_alt),
+                                              onPressed: () {
+                                                _uploadPhoto("license");
+                                              },
+                                              label: Text(
+                                                licensePhotoUrl == null
+                                                    ? "Upload License Photo"
+                                                    : path.basename(
+                                                        licensePhotoUrl!),
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all<
+                                                        Color>(
+                                                  Colors
+                                                      .grey, // Change this to the desired color
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                35, 0, 10, 0),
-                                            child: SizedBox(
-                                              height: 53,
-                                              child: ElevatedButton.icon(
-                                                onPressed: () {
-                                                  _uploadPhoto("user");
-                                                },
-                                                icon: Icon(Icons.camera_alt),
-                                                label: Text(
-                                                  userPhotoUrl == null
-                                                      ? "Upload Your Photo"
-                                                      : path.basename(
-                                                          userPhotoUrl!),
-                                                ),
-                                                style: ButtonStyle(
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                          Color>(
-                                                    Colors
-                                                        .grey, // Change this to the desired color
-                                                  ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              35, 0, 10, 0),
+                                          child: SizedBox(
+                                            height: 53,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () {
+                                                _uploadPhoto("user");
+                                              },
+                                              icon:
+                                                  const Icon(Icons.camera_alt),
+                                              label: Text(
+                                                userPhotoUrl == null
+                                                    ? "Upload Your Photo"
+                                                    : path.basename(
+                                                        userPhotoUrl!),
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all<
+                                                        Color>(
+                                                  Colors
+                                                      .grey, // Change this to the desired color
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    CustomTextField(
-                                      controller: bioController,
-                                      icon: Icons.account_circle,
-                                      hintText: "Bio",
-                                    ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
-                                    CustomButton(
-                                        text: "Sign Up",
-                                        onPressed: () {
-                                          register(context);
-                                        }),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CustomTextField(
+                                    controller: bioController,
+                                    icon: Icons.account_circle,
+                                    hintText: "Bio",
+                                  ),
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  CustomButton(
+                                      text: "Sign Up",
+                                      onPressed: () {
+                                        register(context);
+                                      }),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -434,11 +420,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Row(
           children: <Widget>[
             Icon(widget.icon),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Container(
                 height: 53,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextField(
                   controller: widget.controller,
                   obscureText: obscureText && widget.isPassword,
@@ -447,16 +433,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       : TextInputType.text,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(12)),
                     labelText: widget.hintText,
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(
@@ -484,28 +470,28 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         if (widget.isEmail && _validateEmail(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: const EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validateEmail(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         if (widget.isPassword &&
             _validatePassword(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: const EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validatePassword(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         if (widget.isPhoneNumber &&
             _validatePhoneNumber(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: const EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validatePhoneNumber(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
       ],
@@ -517,7 +503,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     String emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
     RegExp regExp = new RegExp(emailPattern);
 
-    if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
+    if (value.isNotEmpty && !regExp.hasMatch(value)) {
       return 'Please enter a valid email';
     }
     return null;
@@ -529,7 +515,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         r'^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
     RegExp regExp = new RegExp(passwordPattern);
 
-    if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
+    if (value.isNotEmpty && !regExp.hasMatch(value)) {
       return 'Password must contain at least 8 characters, one uppercase letter, and one special character';
     }
     return null;
@@ -537,7 +523,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   String? _validatePhoneNumber(String value) {
     // Phone number validation
-    if (value != null && value.isNotEmpty && value.length != 10) {
+    if (value.isNotEmpty && value.length != 10) {
       return 'Phone number must have exactly 10 digits';
     }
     return null;

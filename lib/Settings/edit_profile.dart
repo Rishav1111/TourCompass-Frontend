@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Settings/profile_info.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/config.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -19,33 +21,33 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Column(
           children: [
             TextFormField(
               controller: controller,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
               ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: const BorderSide(color: Colors.black),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: const BorderSide(color: Colors.black),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
             ),
           ],
@@ -94,15 +96,14 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> updateUser(Map<String, dynamic> updatedData) async {
-    final String apiUrl =
-        'http://192.168.1.3:5000/api/updateTraveller/${widget.id}';
+    final String apiUrl = '${url}updateTraveller/${widget.id}';
+    print(widget.token);
 
     try {
       final http.Response response = await http.put(
         Uri.parse(apiUrl),
         headers: <String, String>{
           'Authorization': 'Bearer ${widget.token}',
-          'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),
       );
@@ -141,23 +142,11 @@ class _EditProfileState extends State<EditProfile> {
 
     try {
       await updateUser(updatedData);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Profile Updated Successfullly!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 3), // Optional: Set the duration
-        ),
-      );
+      showCustomSnackBar(context, 'Profile Updated Successfullly!',
+          backgroundColor: Colors.green);
     } catch (error) {
-      // Handle errors and show an error alert
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Fail to update Profile'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3), // Optional: Set the duration
-        ),
-      );
+      showCustomSnackBar(context, 'Fail to update Profile',
+          backgroundColor: Colors.red);
     }
   }
 
@@ -178,7 +167,7 @@ class _EditProfileState extends State<EditProfile> {
           },
         ),
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Edit Profile',
           style: TextStyle(
             color: Colors.white,
@@ -187,7 +176,7 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
         backgroundColor: Colors.orange[900],
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20.0),
             bottomRight: Radius.circular(20.0),
@@ -215,7 +204,7 @@ class _EditProfileState extends State<EditProfile> {
               controller: phoneNumberController,
               label: 'Phone Number',
             ),
-            SizedBox(height: 35),
+            const SizedBox(height: 35),
             Center(
               child: CustomButton(
                   text: "Save",

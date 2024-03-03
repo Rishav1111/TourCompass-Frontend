@@ -1,5 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/Login%20and%20Signup/signup.dart';
 import 'package:tourcompass/guide_home.dart';
@@ -9,6 +11,7 @@ import 'package:tourcompass/home.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:tourcompass/Utils/scaffold.dart';
 
 class CustomTextField extends StatefulWidget {
   final IconData icon;
@@ -134,6 +137,8 @@ class _LoginPageState extends State<LoginPage> {
     // Check if any of the required fields are empty
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       print('Please fill in all the required fields.');
+      showCustomSnackBar(context, 'Please fill in all the required fields.',
+          backgroundColor: Colors.red);
       return;
     }
 
@@ -167,13 +172,8 @@ class _LoginPageState extends State<LoginPage> {
           print("hello");
           // Navigate based on userType
           if (userType == 'traveller') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Logged in Successfullly!'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 3), // Optional: Set the duration
-              ),
-            );
+            showCustomSnackBar(context, 'Logged in successfully!',
+                backgroundColor: Colors.green);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -185,13 +185,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             );
           } else if (userType == 'guide') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Logged in Successfullly!'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 3), // Optional: Set the duration
-              ),
-            );
+            showCustomSnackBar(context, 'Logged in successfully!',
+                backgroundColor: Colors.green);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -313,104 +308,100 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 60,
                       ),
-                      Container(
-                        child: Column(
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Column(
-                                children: <Widget>[
-                                  CustomTextField(
-                                    icon: Icons.email,
-                                    hintText: "Email",
-                                    controller: emailController,
-                                  ),
-                                  const SizedBox(
-                                    height: 15,
-                                  ),
-                                  CustomTextField(
-                                    icon: Icons.lock,
-                                    hintText: "Password",
-                                    controller: passwordController,
-                                    isPassword: true,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Navigate to SignupPage
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => SendEmail(),
-                                        ),
-                                      );
-                                    },
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "Forgot Password?",
-                                        style: TextStyle(
-                                          color: Colors.orange[900],
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                      Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: <Widget>[
+                                CustomTextField(
+                                  icon: Icons.email,
+                                  hintText: "Email",
+                                  controller: emailController,
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                CustomTextField(
+                                  icon: Icons.lock,
+                                  hintText: "Password",
+                                  controller: passwordController,
+                                  isPassword: true,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    // Navigate to SignupPage
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SendEmail(),
+                                      ),
+                                    );
+                                  },
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      "Forgot Password?",
+                                      style: TextStyle(
+                                        color: Colors.orange[900],
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 40,
-                                  ),
-                                  CustomButton(
-                                      text: "Log In",
-                                      onPressed: () {
-                                        login(context);
-                                      }),
-                                  const SizedBox(
-                                    height: 24,
-                                  ),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        const Text(
-                                          "Don't have an account?",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color.fromARGB(255, 0, 0, 0),
-                                          ),
+                                ),
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                CustomButton(
+                                    text: "Log In",
+                                    onPressed: () {
+                                      login(context);
+                                    }),
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                                Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      const Text(
+                                        "Don't have an account?",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color.fromARGB(255, 0, 0, 0),
                                         ),
-                                        const SizedBox(width: 10),
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Navigate to SignupPage
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => Signup(),
-                                              ),
-                                            );
-                                          },
-                                          // Adjust the spacing as needed
-                                          child: Text(
-                                            "Signup",
-                                            style: TextStyle(
-                                              color: Colors.orange[900],
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      GestureDetector(
+                                        onTap: () {
+                                          // Navigate to SignupPage
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Signup(),
                                             ),
+                                          );
+                                        },
+                                        // Adjust the spacing as needed
+                                        child: Text(
+                                          "Signup",
+                                          style: TextStyle(
+                                            color: Colors.orange[900],
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

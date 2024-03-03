@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/forgetPassword/send_email.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 class CustomTextField extends StatefulWidget {
   final IconData icon;
@@ -109,6 +108,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 }
 
 class AdminLoginPage extends StatefulWidget {
+  const AdminLoginPage({super.key});
+
   @override
   State<AdminLoginPage> createState() => _AdminLoginPageState();
 }
@@ -161,7 +162,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               duration: Duration(seconds: 3),
             ),
           );
-          // You can add navigation code here
         }
       } else {
         print('Failed to login user: ${response.statusCode}');
@@ -218,7 +218,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           color: Color.fromRGBO(241, 85, 29, 1),
         ),
         child: Padding(
-          padding: EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(30.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -227,8 +227,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   width: 450,
                   height: 600,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 255, 255, 255).withOpacity(0.9),
-                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                    color: const Color.fromARGB(255, 255, 255, 255)
+                        .withOpacity(0.9),
+                    borderRadius: const BorderRadius.all(Radius.circular(40)),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(20),

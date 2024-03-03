@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/forgetPassword/otp_code.dart';
 
@@ -20,8 +20,8 @@ class _SendEmailState extends State<SendEmail> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Email"),
-          content: Text(
+          title: const Text("Email"),
+          content: const Text(
               "Email sent Successfully! Please check your mail for OTP code."),
           actions: [
             ElevatedButton(
@@ -36,7 +36,7 @@ class _SendEmailState extends State<SendEmail> {
                   (route) => false,
                 );
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );
@@ -49,7 +49,7 @@ class _SendEmailState extends State<SendEmail> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -96,7 +96,7 @@ class _SendEmailState extends State<SendEmail> {
           emailController.text = '';
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Failed to send email. Please try again.'),
             duration: Duration(seconds: 2),
           ),
@@ -110,7 +110,7 @@ class _SendEmailState extends State<SendEmail> {
       });
       Navigator.pop(context); // Dismiss loading dialog
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('An error occurred. Please try again.'),
           duration: Duration(seconds: 2),
         ),
@@ -123,17 +123,17 @@ class _SendEmailState extends State<SendEmail> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               iconSize: 30,
               color: Colors.black,
               onPressed: () {
@@ -151,7 +151,7 @@ class _SendEmailState extends State<SendEmail> {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -163,41 +163,43 @@ class _SendEmailState extends State<SendEmail> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Text(
+                  const Text(
                     'Please enter your email address to receive OTP code',
                     style: TextStyle(
                       color: Color.fromRGBO(54, 54, 54, 1),
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Row(
                     children: <Widget>[
-                      Icon(Icons.email),
-                      SizedBox(width: 10),
+                      const Icon(Icons.email),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Container(
                           height: 53,
-                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: TextFormField(
                             controller: emailController,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
+                                borderSide:
+                                    const BorderSide(color: Colors.black),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               labelText: "Email",
-                              hintStyle: TextStyle(color: Colors.black),
+                              hintStyle: const TextStyle(color: Colors.black),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
+                                borderSide:
+                                    const BorderSide(color: Colors.black),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 10),
                             ),
                           ),
@@ -205,7 +207,7 @@ class _SendEmailState extends State<SendEmail> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Center(

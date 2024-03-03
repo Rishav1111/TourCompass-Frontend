@@ -1,10 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
 import 'package:http/http.dart' as http;
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/forgetPassword/otp_code.dart';
 import 'package:tourcompass/password_textfield.dart' as CustomTextField;
 
 class NewPassword extends StatefulWidget {
@@ -25,12 +27,15 @@ class __NewPasswordState extends State<NewPassword> {
   void newPassword(BuildContext context) async {
     if (passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
+      showCustomSnackBar(context, "Please enter all fields.",
+          backgroundColor: Colors.red);
       print("Password is empty");
       return;
     }
 
     if (passwordController.text != confirmPasswordController.text) {
-      print("Passwords do not match");
+      showCustomSnackBar(context, "Passwords do not match",
+          backgroundColor: Colors.red);
       return;
     }
 
@@ -48,15 +53,8 @@ class __NewPasswordState extends State<NewPassword> {
 
       if (response.statusCode == 200) {
         print("Password reset Successfully");
-
-        // Show snackbar message using ScaffoldMessenger
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Password reset successfully.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
+        showCustomSnackBar(context, 'Password reset successfully.',
+            backgroundColor: Colors.green);
 
         // Navigate to login page after showing the snackbar
         Navigator.push(
@@ -68,13 +66,8 @@ class __NewPasswordState extends State<NewPassword> {
           passwordController.text = '';
           confirmPasswordController.text = '';
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error reset password.'),
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
-        print("Error reset");
+        showCustomSnackBar(context, 'Error reset password.',
+            backgroundColor: Colors.red);
       }
     } catch (e) {
       print(e);
@@ -86,17 +79,17 @@ class __NewPasswordState extends State<NewPassword> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               iconSize: 30,
               color: Colors.black,
               onPressed: () {
@@ -114,7 +107,7 @@ class __NewPasswordState extends State<NewPassword> {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -126,17 +119,17 @@ class __NewPasswordState extends State<NewPassword> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Text(
+                  const Text(
                     'Enter your new password',
                     style: TextStyle(
                       color: Color.fromRGBO(54, 54, 54, 1),
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   CustomTextField.CustomTextField(
@@ -145,7 +138,7 @@ class __NewPasswordState extends State<NewPassword> {
                     controller: passwordController,
                     isPassword: true,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   CustomTextField.CustomTextField(
@@ -154,7 +147,7 @@ class __NewPasswordState extends State<NewPassword> {
                     controller: confirmPasswordController,
                     isPassword: true,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 67,
                   ),
                   Center(

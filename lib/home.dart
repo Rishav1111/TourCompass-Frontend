@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:tourcompass/order.dart';
 import 'package:tourcompass/Settings/settings.dart';
-import 'package:tourcompass/Login%20and%20Signup/login.dart';
 
 class Home extends StatefulWidget {
   final id;
@@ -82,7 +79,7 @@ class HomeState extends State<Home> {
 class HomeContent extends StatelessWidget {
   final String fName;
 
-  const HomeContent({required this.fName});
+  const HomeContent({super.key, required this.fName});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +98,7 @@ class HomeContent extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: Colors.orange[900],
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20.0),
             bottomRight: Radius.circular(20.0),
@@ -114,7 +111,7 @@ class HomeContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.person,
                 size: 20,
                 color: Colors.black,

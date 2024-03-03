@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -32,27 +35,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Row(
           children: <Widget>[
             Icon(widget.icon),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Container(
                 height: 53,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextField(
                   controller: widget.controller,
                   obscureText: obscureText && widget.isPassword,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     labelText: widget.hintText,
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(
@@ -80,12 +83,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         if (widget.isPassword)
           Padding(
-            padding: EdgeInsets.only(left: 40, top: 5),
+            padding: const EdgeInsets.only(left: 40, top: 5),
             child: Text(
               widget.hintText == "Current Password"
                   ? ""
                   : _validatePassword(widget.controller.text) ?? "",
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
       ],
@@ -129,27 +132,18 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool isCurrentPasswordVisible = false;
   bool isNewPasswordVisible = false;
   bool isConfirmNewPasswordVisible = false;
-  void _showSnackBar(String message, {Color? backgroundColor}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: backgroundColor,
-        duration: Duration(seconds: 3),
-      ),
-    );
-  }
 
   Future<void> changePassword() async {
     // Validate input
 
     if (currentPasswordController.text == newPasswordController.text) {
-      _showSnackBar("New password must be different from the current password.",
-          backgroundColor: Colors.red);
       return;
     }
     if (newPasswordController.text != confirmNewPasswordController.text) {
-      _showSnackBar("New password and confirm password do not match.",
+      showCustomSnackBar(
+          context, "New password and confirm password do not match.",
           backgroundColor: Colors.red);
+
       return;
     }
 
@@ -170,23 +164,26 @@ class _ChangePasswordState extends State<ChangePassword> {
       );
 
       if (response.statusCode == 200) {
-        _showSnackBar('Password changed successfully',
+        showCustomSnackBar(context, 'Password changed successfully',
             backgroundColor: Colors.green);
         print('Password changed successfully');
       } else if (response.statusCode == 401) {
-        _showSnackBar('Incorrect current password',
+        showCustomSnackBar(context, 'Incorrect current password',
             backgroundColor: Colors.red);
+
         print('Incorrect current password');
       } else {
-        // Handle other API errors
-        _showSnackBar(
-            'Failed to change password. Status code: ${response.body}');
+        showCustomSnackBar(
+            context, 'Failed to change password. Status code: ${response.body}',
+            backgroundColor: Colors.red);
+
         print('Failed to change password. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
       }
     } catch (error) {
-      // Handle network or other errors
-      _showSnackBar('Error changing password: $error');
+      showCustomSnackBar(context, 'Error changing password: $error',
+          backgroundColor: Colors.red);
+
       print('Error changing password: $error');
     }
   }
@@ -229,7 +226,7 @@ class _ChangePasswordState extends State<ChangePassword> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             CustomTextField(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Settings/guide_profile.dart';
-import 'package:tourcompass/Settings/profile_info.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/config.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -21,33 +21,33 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Column(
           children: [
             TextFormField(
               controller: controller,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
               ),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: const BorderSide(color: Colors.black),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: const BorderSide(color: Colors.black),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
             ),
           ],
@@ -108,8 +108,7 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
   }
 
   Future<void> updateUser(Map<String, dynamic> updatedData) async {
-    final String apiUrl =
-        'http://192.168.1.3:5000/api/updateGuide/${widget.id}';
+    final String apiUrl = '${url}updateGuide/${widget.id}';
 
     try {
       final http.Response response = await http.put(
@@ -124,7 +123,6 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
       if (response.statusCode == 200) {
         // Successful update
         print('User updated successfully');
-        print(updatedData);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -158,23 +156,11 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
 
     try {
       await updateUser(updatedData);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Profile Updated Successfullly!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 3), // Optional: Set the duration
-        ),
-      );
+      showCustomSnackBar(context, 'Profile Updated Successfullly!',
+          backgroundColor: Colors.green);
     } catch (error) {
-      // Handle errors and show an error alert
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Fail to update Profile'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3), // Optional: Set the duration
-        ),
-      );
+      showCustomSnackBar(context, 'Fail to update Profile',
+          backgroundColor: Colors.red);
     }
   }
 
@@ -195,7 +181,7 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
           },
         ),
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Edit Profile',
           style: TextStyle(
             color: Colors.white,
@@ -204,7 +190,7 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
           ),
         ),
         backgroundColor: Colors.orange[900],
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20.0),
             bottomRight: Radius.circular(20.0),
@@ -245,7 +231,7 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
                 controller: bioController,
                 label: 'Bio',
               ),
-              SizedBox(height: 35),
+              const SizedBox(height: 35),
               Center(
                 child: CustomButton(
                     text: "Save",

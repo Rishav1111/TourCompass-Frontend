@@ -29,26 +29,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Row(
           children: <Widget>[
             Icon(widget.icon),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Container(
                 height: 53,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextField(
                   controller: widget.controller,
                   obscureText: obscureText && widget.isPassword,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+                        borderSide: const BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(12)),
                     labelText: widget.hintText,
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: const TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black),
+                      borderSide: const BorderSide(color: Colors.black),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
                     suffixIcon: widget.isPassword
                         ? IconButton(
                             icon: Icon(
@@ -77,10 +77,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.isPassword &&
             _validatePassword(widget.controller.text) != null)
           Padding(
-            padding: EdgeInsets.only(left: 35, top: 5),
+            padding: const EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validatePassword(widget.controller.text)!,
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
       ],
@@ -93,7 +93,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         r'^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
     RegExp regExp = new RegExp(passwordPattern);
 
-    if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
+    if (value.isNotEmpty && !regExp.hasMatch(value)) {
       return 'Password must contain at least 8 characters, one uppercase letter, and one special character';
     }
     return null;

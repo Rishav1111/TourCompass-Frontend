@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Settings/edit_profile.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/config.dart';
 
 class Profile extends StatefulWidget {
   final String id;
@@ -29,7 +30,7 @@ class _ProfileState extends State<Profile> {
   Future<void> fetchData() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.1.3:5000/api/getTraveller/${widget.id}'),
+        Uri.parse('${url}getTraveller/${widget.id}'),
         headers: {'Authorization': 'Bearer ${widget.token}'},
       );
 

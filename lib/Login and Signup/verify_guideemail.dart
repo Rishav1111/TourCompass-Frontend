@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/forgetPassword/send_email.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -70,17 +71,9 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
 
       if (response.statusCode == 200) {
         print("PIN verified");
+        showCustomSnackBar(context, 'Email verified successfully.',
+            backgroundColor: Colors.green);
 
-        // Show snackbar message using ScaffoldMessenger
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Email verified successfully.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
-
-        // Navigate to the NewPassword page after showing the snackbar
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -88,68 +81,30 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid Pin!'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
-        print("PIN not verified");
+        showCustomSnackBar(context, 'Invalid Pin!',
+            backgroundColor: Colors.red);
       }
     } catch (e) {
       print(e);
     }
   }
 
-  // void resentemail() async {
-  //   var emailBody = {
-  //     'email': widget.email,
-  //   };
-
-  //   try {
-  //     var response = await http.post(Uri.parse(forgetPassword),
-  //         headers: {"Content-Type": "application/json"},
-  //         body: jsonEncode(emailBody));
-
-  //     if (response.statusCode == 200) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('OTP resent successfully.'),
-  //           backgroundColor: Colors.blue,
-  //           duration: Duration(seconds: 3), // Optional: Set the duration
-  //         ),
-  //       );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Failed to send email. Please try again.'),
-  //           duration: Duration(seconds: 2),
-  //         ),
-  //       );
-  //       print("Email not sent");
-  //     }
-  //   } catch (e) {
-  //     // Handle exceptions
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color.fromRGBO(249, 225, 211, 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               iconSize: 30,
               color: Colors.black,
               onPressed: () {
@@ -167,7 +122,7 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -179,17 +134,17 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Text(
+                  const Text(
                     'Please enter the OTP code that you have received in the email address',
                     style: TextStyle(
                       color: Color.fromRGBO(54, 54, 54, 1),
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   OTPTextField(
@@ -199,14 +154,13 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
                     fieldWidth: 55,
                     fieldStyle: FieldStyle.box,
                     outlineBorderRadius: 12,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                     onCompleted: (pin) {
-                      print("Completed: " + pin);
                       otp(context,
                           pin); // Pass the entered PIN to the otp method
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Center(
@@ -216,39 +170,37 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
                           otp(context, "");
                         }),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Container(
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "Didn't receive OTP code?",
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text(
+                          "Didn't receive OTP code?",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 0, 0, 0),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            // resentemail();
+                            // Navigate to SignupPage
+                          },
+                          // Adjust the spacing as needed
+                          child: Text(
+                            "Resend OTP",
                             style: TextStyle(
+                              color: Colors.orange[900],
+                              fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: const Color.fromARGB(255, 0, 0, 0),
                             ),
                           ),
-                          SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: () {
-                              // resentemail();
-                              // Navigate to SignupPage
-                            },
-                            // Adjust the spacing as needed
-                            child: Text(
-                              "Resend OTP",
-                              style: TextStyle(
-                                color: Colors.orange[900],
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

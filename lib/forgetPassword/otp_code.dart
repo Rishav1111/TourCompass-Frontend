@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:tourcompass/button.dart';
+import 'package:tourcompass/Utils/Scaffold.dart';
+import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/forgetPassword/send_email.dart';
 import 'package:tourcompass/forgetPassword/new_password.dart';
 import 'package:http/http.dart' as http;
@@ -38,18 +41,8 @@ class _VerifyOtpState extends State<VerifyOtp> {
       );
 
       if (response.statusCode == 200) {
-        print("PIN verified");
-
-        // Show snackbar message using ScaffoldMessenger
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('OTP verified successfully.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
-
-        // Navigate to the NewPassword page after showing the snackbar
+        showCustomSnackBar(context, 'OTP verified successfully.',
+            backgroundColor: Colors.green);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -57,13 +50,9 @@ class _VerifyOtpState extends State<VerifyOtp> {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid Pin!'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
+        showCustomSnackBar(context, 'Invalid Pin!',
+            backgroundColor: Colors.green);
+
         print("PIN not verified");
       }
     } catch (e) {
@@ -82,21 +71,11 @@ class _VerifyOtpState extends State<VerifyOtp> {
           body: jsonEncode(emailBody));
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('OTP resent successfully.'),
-            backgroundColor: Colors.blue,
-            duration: Duration(seconds: 3), // Optional: Set the duration
-          ),
-        );
+        showCustomSnackBar(context, 'OTP resent successfully.',
+            backgroundColor: Colors.green);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to send email. Please try again.'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-        print("Email not sent");
+        showCustomSnackBar(context, 'Failed to send email. Please try again.',
+            backgroundColor: Colors.red);
       }
     } catch (e) {
       // Handle exceptions
@@ -108,17 +87,17 @@ class _VerifyOtpState extends State<VerifyOtp> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 40,
             ),
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               iconSize: 30,
               color: Colors.black,
               onPressed: () {
@@ -136,7 +115,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -148,17 +127,17 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
-                  Text(
+                  const Text(
                     'Please enter the OTP code that you have received in the email address',
                     style: TextStyle(
                       color: Color.fromRGBO(54, 54, 54, 1),
                       fontSize: 14,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   OTPTextField(
@@ -168,14 +147,14 @@ class _VerifyOtpState extends State<VerifyOtp> {
                     fieldWidth: 55,
                     fieldStyle: FieldStyle.box,
                     outlineBorderRadius: 12,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                     onCompleted: (pin) {
                       print("Completed: " + pin);
                       otp(context,
                           pin); // Pass the entered PIN to the otp method
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Center(
@@ -185,39 +164,37 @@ class _VerifyOtpState extends State<VerifyOtp> {
                           otp(context, "");
                         }),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
-                  Container(
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "Didn't receive OTP code?",
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text(
+                          "Didn't receive OTP code?",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 0, 0, 0),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            resentemail();
+                            // Navigate to SignupPage
+                          },
+                          // Adjust the spacing as needed
+                          child: Text(
+                            "Resend OTP",
                             style: TextStyle(
+                              color: Colors.orange[900],
+                              fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: const Color.fromARGB(255, 0, 0, 0),
                             ),
                           ),
-                          SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: () {
-                              resentemail();
-                              // Navigate to SignupPage
-                            },
-                            // Adjust the spacing as needed
-                            child: Text(
-                              "Resend OTP",
-                              style: TextStyle(
-                                color: Colors.orange[900],
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
