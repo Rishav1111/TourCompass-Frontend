@@ -6,6 +6,8 @@ import 'package:tourcompass/Utils/button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:tourcompass/config.dart';
+
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final IconData icon;
@@ -137,6 +139,8 @@ class _ChangePasswordState extends State<ChangePassword> {
     // Validate input
 
     if (currentPasswordController.text == newPasswordController.text) {
+      showCustomSnackBar(context, "Please enter New Password.",
+          backgroundColor: Colors.red);
       return;
     }
     if (newPasswordController.text != confirmNewPasswordController.text) {
@@ -155,7 +159,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     try {
       final http.Response response = await http.put(
-        Uri.parse('http://192.168.1.3:5000/api/changePassword/${widget.id}'),
+        Uri.parse('${url}/changePassword/${widget.id}'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',

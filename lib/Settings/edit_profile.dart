@@ -104,6 +104,7 @@ class _EditProfileState extends State<EditProfile> {
         Uri.parse(apiUrl),
         headers: <String, String>{
           'Authorization': 'Bearer ${widget.token}',
+          'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),
       );

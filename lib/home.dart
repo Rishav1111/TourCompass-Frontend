@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tourcompass/guide_list.dart';
 import 'package:tourcompass/order.dart';
 import 'package:tourcompass/Settings/settings.dart';
 
@@ -28,7 +30,7 @@ class HomeState extends State<Home> {
     super.initState();
 
     _pages = [
-      HomeContent(fName: widget.firstname),
+      HomeContent(fName: widget.firstname, token: widget.token),
       const OrderPage(),
       Setting(
         token: widget.token,
@@ -76,10 +78,18 @@ class HomeState extends State<Home> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   final String fName;
+  final String token;
 
-  const HomeContent({super.key, required this.fName});
+  const HomeContent({super.key, required this.fName, required this.token});
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  LatLng myLatLong = const LatLng(27.6710221, 85.4298197);
 
   @override
   Widget build(BuildContext context) {
@@ -106,26 +116,56 @@ class HomeContent extends StatelessWidget {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.person,
-                size: 20,
-                color: Colors.black,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'Welcome, $fName',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
               ),
-            ],
+              onChanged: (value) {
+                setState(() {});
+              },
+              onSubmitted: (value) {
+                // Navigate to the search results page when the user presses enter
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GuideListPage(
+                      token: widget.token,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
+          Expanded(
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: myLatLong,
+                zoom: 14.0,
+              ),
+              markers: {
+                Marker(
+                  markerId: const MarkerId("Home"),
+                  position: myLatLong,
+                  infoWindow: const InfoWindow(
+                    title: 'Home',
+                    snippet: 'Your current location',
+                  ),
+                ),
+              },
+            ),
+          ),
+
+          const SizedBox(height: 5),
+
+          // Other widgets can be added below the search bar
         ],
       ),
     );

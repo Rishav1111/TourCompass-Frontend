@@ -103,7 +103,7 @@ class _SettingState extends State<Setting> {
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 208, 207, 207),
+                color: const Color.fromRGBO(228, 225, 222, 1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -173,7 +173,7 @@ class _SettingState extends State<Setting> {
               height: 60,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 208, 207, 207),
+                color: const Color.fromRGBO(228, 225, 222, 1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -215,7 +215,7 @@ class _SettingState extends State<Setting> {
               height: 60,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 208, 207, 207),
+                color: const Color.fromRGBO(228, 225, 222, 1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Column(
