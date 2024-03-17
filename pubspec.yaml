@@ -47,6 +47,8 @@ dev_dependencies:
   path: 1.9.0
   geocoding: ^2.2.0
   google_maps_flutter: ^2.6.0
+  google_places_flutter: ^2.0.8
+  geolocator: ^11.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
