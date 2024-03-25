@@ -105,65 +105,55 @@ class _HomeContentState extends State<HomeContent> {
       CameraPosition(target: LatLng(27.6710221, 85.4298197), zoom: 14);
 
   Set<Marker> markers = {};
-  // LatLng myLatLong = const LatLng(27.6710221, 85.4298197);
   List<String> autocompleteResults = [];
+  List<String> selectedPlaceIds = [];
   final TextEditingController _searchController = TextEditingController();
-  final FocusNode _searchFocusNode =
-      FocusNode(); // Add a FocusNode for the search bar
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void dispose() {
-    _searchFocusNode.dispose(); // Dispose the FocusNode
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: const Text(
-            'TourCompass',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.orange[900],
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20.0),
-              bottomRight: Radius.circular(20.0),
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'TourCompass',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        body: Stack(
-          children: [
-            _buildGoogleMap(),
-            _buildSearchBar(),
-            _buildAutocompleteList(),
-          ],
+        centerTitle: true,
+        backgroundColor: Colors.orange[900],
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20.0),
+            bottomRight: Radius.circular(20.0),
+          ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            Position position = await _determinePosition();
-
-            googleMapController.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                    target: LatLng(position.latitude, position.longitude),
-                    zoom: 14)));
-            markers.clear();
-            markers.add(Marker(
-                markerId: const MarkerId('CurrentLocation'),
-                position: LatLng(position.latitude, position.longitude)));
-
-            setState(() {});
-          },
-          label: const Text("Current Location"),
-          icon: const Icon(Icons.location_history),
-        ));
+      ),
+      body: Stack(
+        children: [
+          _buildGoogleMap(),
+          _buildSearchBar(),
+          _buildAutocompleteList(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          Position position = await _determinePosition();
+          _showCurrentLocation(position);
+        },
+        label: const Text("Current Location"),
+        icon: const Icon(Icons.location_history),
+      ),
+    );
   }
 
   Future<Position> _determinePosition() async {
@@ -214,7 +204,7 @@ class _HomeContentState extends State<HomeContent> {
         padding: const EdgeInsets.all(15),
         child: TextField(
           controller: _searchController,
-          focusNode: _searchFocusNode, // Assign the FocusNode to the search bar
+          focusNode: _searchFocusNode,
           decoration: InputDecoration(
             hintText: 'Search...',
             prefixIcon: const Icon(Icons.search),
@@ -223,9 +213,7 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
           onChanged: _fetchAutocompleteResults,
-          onTap: () {
-            _updateAutocompleteResults();
-          },
+          onTap: _updateAutocompleteResults,
         ),
       ),
     );
@@ -233,9 +221,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildAutocompleteList() {
     return Visibility(
-      visible: autocompleteResults.isNotEmpty &&
-          _searchFocusNode
-              .hasFocus, // Only show if suggestions are available and search bar is focused
+      visible: autocompleteResults.isNotEmpty && _searchFocusNode.hasFocus,
       child: Positioned(
         top: kToolbarHeight + 20,
         left: 10,
@@ -261,8 +247,8 @@ class _HomeContentState extends State<HomeContent> {
                 title: Text(autocompleteResults[index]),
                 onTap: () {
                   _updateSearchBarText(autocompleteResults[index]);
-                  _searchFocusNode
-                      .unfocus(); // Unfocus the search bar after selecting a suggestion
+                  _searchFocusNode.unfocus();
+                  displaySuggestion(selectedPlaceIds[index]);
                 },
               );
             },
@@ -279,20 +265,37 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   void _fetchAutocompleteResults(String input) async {
-    String baseUrl = 'http://192.168.1.5:5000/api/autocomplete';
+    String baseUrl = 'http://192.168.1.9:5000/api/autocomplete';
     String url = '$baseUrl?input=$input&radius=500';
 
     try {
       final response = await http.get(Uri.parse(url));
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        setState(() {
-          autocompleteResults = List<String>.from(json
-              .decode(response.body)['predictions']
-              .map((prediction) => prediction['description']));
-        });
+        Map<String, dynamic> data = json.decode(response.body);
+        List<dynamic>? predictions = data['responseData']['predictions'];
+
+        if (predictions != null) {
+          List<String> suggestions = [];
+          List<String> placeIds = [];
+
+          for (var prediction in predictions) {
+            String description = prediction['description'];
+            suggestions.add(description);
+            String placeId = prediction['place_id'];
+            placeIds.add(placeId);
+          }
+
+          setState(() {
+            autocompleteResults = suggestions;
+            selectedPlaceIds = placeIds;
+          });
+        } else {
+          setState(() {
+            autocompleteResults = [];
+            selectedPlaceIds = [];
+          });
+        }
       } else {
         print('Failed to load autocomplete results');
       }
@@ -303,5 +306,71 @@ class _HomeContentState extends State<HomeContent> {
 
   void _updateAutocompleteResults() {
     _fetchAutocompleteResults(_searchController.text);
+  }
+
+  Future<void> displaySuggestion(String placeId) async {
+    String url =
+        'https://map-places.p.rapidapi.com/details/json?place_id=$placeId';
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
+        'X-RapidAPI-Host': 'map-places.p.rapidapi.com',
+      });
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        double latitude = data['result']['geometry']['location']['lat'];
+        double longitude = data['result']['geometry']['location']['lng'];
+
+        LatLng selectedPlaceLocation = LatLng(latitude, longitude);
+        _showPlaceOnMap(selectedPlaceLocation);
+      } else {
+        print('Failed to load place details');
+      }
+    } catch (error) {
+      print('Error fetching place details: $error');
+    }
+  }
+
+  void _showPlaceOnMap(LatLng location) {
+    CameraPosition _kGooglePlex = CameraPosition(
+      target: location,
+      zoom: 14,
+    );
+
+    googleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+
+    setState(() {
+      markers.clear();
+      markers.add(Marker(
+        markerId: MarkerId('SelectedPlace'),
+        position: location,
+        infoWindow: InfoWindow(
+          title: 'Selected Place',
+          snippet: 'Place Description',
+        ),
+      ));
+    });
+  }
+
+  void _showCurrentLocation(Position position) {
+    googleMapController.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(position.latitude, position.longitude),
+        14,
+      ),
+    );
+
+    markers.clear();
+    markers.add(
+      Marker(
+        markerId: const MarkerId('CurrentLocation'),
+        position: LatLng(position.latitude, position.longitude),
+      ),
+    );
+
+    setState(() {});
   }
 }

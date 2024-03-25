@@ -1,4 +1,4 @@
-const url = 'http://192.168.1.5:5000/api/';
+const url = 'http://192.168.1.9:5000/api/';
 // const url = 'http://10.22.172.60:5000/api/';
 const adminUrl = 'http://localhost:5000/api/';
 
