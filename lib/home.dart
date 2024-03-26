@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-// import 'dart:html';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tourcompass/choose_date.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/guide_list.dart';
 import 'package:tourcompass/order.dart';
@@ -36,7 +36,7 @@ class HomeState extends State<Home> {
     super.initState();
 
     _pages = [
-      HomeContent(fName: widget.firstname, token: widget.token),
+      HomeContent(fName: widget.firstname, id: widget.id, token: widget.token),
       const OrderPage(),
       Setting(
         token: widget.token,
@@ -87,9 +87,11 @@ class HomeState extends State<Home> {
 class HomeContent extends StatefulWidget {
   final String fName;
   final String token;
+  final String id;
 
   const HomeContent({
     Key? key,
+    required this.id,
     required this.fName,
     required this.token,
   }) : super(key: key);
@@ -100,6 +102,8 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   late GoogleMapController googleMapController;
+  Position? _currentPosition;
+  bool _placeSearched = false;
 
   static const CameraPosition initialCameraPosition =
       CameraPosition(target: LatLng(27.6710221, 85.4298197), zoom: 14);
@@ -143,6 +147,7 @@ class _HomeContentState extends State<HomeContent> {
           _buildGoogleMap(),
           _buildSearchBar(),
           _buildAutocompleteList(),
+          _buildConfirmPlaceButton(),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -152,6 +157,42 @@ class _HomeContentState extends State<HomeContent> {
         },
         label: const Text("Current Location"),
         icon: const Icon(Icons.location_history),
+      ),
+    );
+  }
+
+  Widget _buildConfirmPlaceButton() {
+    return Positioned(
+      bottom: 90, // Adjust as per your UI requirements
+      left: 0,
+      right: 0,
+      child: Visibility(
+        visible: _placeSearched && _searchController.text.isNotEmpty,
+        child: Center(
+          child: SizedBox(
+            width: 200,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => choose_date(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[900],
+              ),
+              child: const Text(
+                "Confirm Place",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -180,6 +221,7 @@ class _HomeContentState extends State<HomeContent> {
     }
 
     Position position = await Geolocator.getCurrentPosition();
+
     return position;
   }
 
@@ -265,11 +307,9 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   void _fetchAutocompleteResults(String input) async {
-    String baseUrl = 'http://192.168.1.9:5000/api/autocomplete';
-    String url = '$baseUrl?input=$input&radius=500';
-
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse('$url/autocomplete?input=$input&radius=500'));
 
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
@@ -314,8 +354,10 @@ class _HomeContentState extends State<HomeContent> {
 
     try {
       final response = await http.get(Uri.parse(url), headers: {
-        'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
-        'X-RapidAPI-Host': 'map-places.p.rapidapi.com',
+        // 'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
+        // 'X-RapidAPI-Host': 'map-places.p.rapidapi.com',
+        'X-RapidAPI-Key': 'a88524bacbmsh8555d6176540d30p12eba9jsn717b2697281b',
+        'X-RapidAPI-Host': 'map-places.p.rapidapi.com'
       });
 
       if (response.statusCode == 200) {
@@ -325,6 +367,9 @@ class _HomeContentState extends State<HomeContent> {
 
         LatLng selectedPlaceLocation = LatLng(latitude, longitude);
         _showPlaceOnMap(selectedPlaceLocation);
+        setState(() {
+          _placeSearched = true;
+        });
       } else {
         print('Failed to load place details');
       }
@@ -333,32 +378,74 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
-  void _showPlaceOnMap(LatLng location) {
-    CameraPosition _kGooglePlex = CameraPosition(
+  Future<void> _showPlaceOnMap(LatLng location) async {
+    CameraPosition kSelectedPlace = CameraPosition(
       target: location,
       zoom: 14,
     );
 
     googleMapController
-        .animateCamera(CameraUpdate.newCameraPosition(_kGooglePlex));
+        .animateCamera(CameraUpdate.newCameraPosition(kSelectedPlace));
 
     setState(() {
       markers.clear();
       markers.add(Marker(
         markerId: MarkerId('SelectedPlace'),
         position: location,
-        infoWindow: InfoWindow(
+        infoWindow: const InfoWindow(
           title: 'Selected Place',
           snippet: 'Place Description',
         ),
       ));
+
+      if (_currentPosition != null) {
+        markers.add(
+          Marker(
+            markerId: const MarkerId('CurrentLocation'),
+            position:
+                LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+          ),
+        );
+      }
     });
   }
 
-  void _showCurrentLocation(Position position) {
+  Future<void> _showCurrentLocation(Position position) async {
+    double latitude = position.latitude;
+    double longitude = position.longitude;
+
+    // Now you can use latitude and longitude as needed
+    print('Latitude: $latitude');
+    print('Longitude: $longitude');
+    String apiUrl = '$url/saveLocation';
+    Map<String, dynamic> body = {
+      'userId': widget.id,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: json.encode(body),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      // Check if the request was successful
+      if (response.statusCode == 200) {
+        // Handle success
+        print('Location saved successfully');
+      } else {
+        // Handle other status codes
+        print('Failed to save location. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle errors
+      print('Error saving location: $error');
+    }
     googleMapController.animateCamera(
       CameraUpdate.newLatLngZoom(
-        LatLng(position.latitude, position.longitude),
+        LatLng(latitude, longitude),
         14,
       ),
     );
@@ -367,7 +454,7 @@ class _HomeContentState extends State<HomeContent> {
     markers.add(
       Marker(
         markerId: const MarkerId('CurrentLocation'),
-        position: LatLng(position.latitude, position.longitude),
+        position: LatLng(latitude, longitude),
       ),
     );
 
