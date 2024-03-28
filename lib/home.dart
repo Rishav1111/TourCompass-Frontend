@@ -6,15 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tourcompass/choose_date.dart';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/guide_list.dart';
 import 'package:tourcompass/order.dart';
 import 'package:tourcompass/Settings/settings.dart';
 
 class Home extends StatefulWidget {
-  final id;
-  final firstname;
-  final userType;
-  final token;
+  final String id;
+  final String firstname;
+  final String userType;
+  final String token;
   const Home(
       {required this.id,
       required this.firstname,
@@ -177,7 +176,13 @@ class _HomeContentState extends State<HomeContent> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => choose_date(),
+                    builder: (context) => choose_date(
+                      userId: widget.id,
+                      searchedName: _searchController.text,
+                      placeId: selectedPlaceIds.isNotEmpty
+                          ? selectedPlaceIds[0]
+                          : null,
+                    ),
                   ),
                 );
               },
@@ -356,8 +361,8 @@ class _HomeContentState extends State<HomeContent> {
       final response = await http.get(Uri.parse(url), headers: {
         // 'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
         // 'X-RapidAPI-Host': 'map-places.p.rapidapi.com',
-        'X-RapidAPI-Key': 'a88524bacbmsh8555d6176540d30p12eba9jsn717b2697281b',
-        'X-RapidAPI-Host': 'map-places.p.rapidapi.com'
+        // 'X-RapidAPI-Key': 'a88524bacbmsh8555d6176540d30p12eba9jsn717b2697281b',
+        // 'X-RapidAPI-Host': 'map-places.p.rapidapi.com'
       });
 
       if (response.statusCode == 200) {
@@ -390,7 +395,7 @@ class _HomeContentState extends State<HomeContent> {
     setState(() {
       markers.clear();
       markers.add(Marker(
-        markerId: MarkerId('SelectedPlace'),
+        markerId: const MarkerId('SelectedPlace'),
         position: location,
         infoWindow: const InfoWindow(
           title: 'Selected Place',
@@ -413,10 +418,6 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> _showCurrentLocation(Position position) async {
     double latitude = position.latitude;
     double longitude = position.longitude;
-
-    // Now you can use latitude and longitude as needed
-    print('Latitude: $latitude');
-    print('Longitude: $longitude');
     String apiUrl = '$url/saveLocation';
     Map<String, dynamic> body = {
       'userId': widget.id,

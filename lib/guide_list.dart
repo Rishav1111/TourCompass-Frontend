@@ -21,13 +21,13 @@ class _GuideListPageState extends State<GuideListPage> {
   @override
   void initState() {
     super.initState();
-    fetchUser();
+    // fetchUser(String searchedName);
   }
 
-  Future<void> fetchUser() async {
+  Future<void> fetchUser(String searchedName) async {
     try {
       final response = await http.get(
-        Uri.parse('${url}getAllGuide'),
+        Uri.parse('${url}getGuideBySearchsearch=$searchedName'),
         headers: {'Authorization': 'Bearer ${widget.token}'},
       );
 

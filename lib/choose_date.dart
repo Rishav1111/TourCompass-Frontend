@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:tourcompass/Utils/button.dart';
 
 class choose_date extends StatefulWidget {
-  const choose_date({super.key});
+  final String? searchedName;
+  final String? placeId;
+  final String? userId;
+
+  const choose_date({Key? key, this.userId, this.searchedName, this.placeId})
+      : super(key: key);
 
   @override
   State<choose_date> createState() => _choose_dateState();
@@ -87,7 +93,7 @@ class _choose_dateState extends State<choose_date> {
                 });
               },
             ),
-            // Add other widgets below the calendar as needed
+            CustomButton(text: "Search Guide", onPressed: () {}),
           ],
         ),
       ),
