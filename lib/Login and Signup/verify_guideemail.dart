@@ -95,7 +95,7 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
       resizeToAvoidBottomInset: false,
       body: Container(
         decoration: const BoxDecoration(
-          color: Color.fromRGBO(249, 225, 211, 1),
+          color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

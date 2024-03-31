@@ -303,8 +303,8 @@ class _SignupPageState extends State<Signup_guide> {
                                                 backgroundColor:
                                                     MaterialStateProperty.all<
                                                         Color>(
-                                                  Colors
-                                                      .grey, // Change this to the desired color
+                                                  Color.fromARGB(255, 215, 210,
+                                                      210), // Change this to the desired color
                                                 ),
                                               ),
                                             ),
@@ -340,8 +340,8 @@ class _SignupPageState extends State<Signup_guide> {
                                                 backgroundColor:
                                                     MaterialStateProperty.all<
                                                         Color>(
-                                                  Colors
-                                                      .grey, // Change this to the desired color
+                                                  Color.fromARGB(255, 215, 210,
+                                                      210), // Change this to the desired color
                                                 ),
                                               ),
                                             ),

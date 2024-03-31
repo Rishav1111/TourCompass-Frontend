@@ -28,35 +28,19 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   int _selectedIndex = 0;
-  late List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _pages = [
-      HomeContent(fName: widget.firstname, id: widget.id, token: widget.token),
-      const OrderPage(),
-      Setting(
-        token: widget.token,
-        id: widget.id,
-        userType: widget.userType,
-      ),
-    ];
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  List<Widget?> _pages = List.filled(3, null);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: _pages,
+        children: _pages.map((page) {
+          if (page == null) {
+            return Container(); // Placeholder widget while page is loading
+          }
+          return page;
+        }).toList(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -80,6 +64,39 @@ class HomeState extends State<Home> {
         backgroundColor: Colors.orange[900],
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (_pages[index] == null) {
+        _initPage(index);
+      }
+    });
+  }
+
+  void _initPage(int index) {
+    switch (index) {
+      case 0:
+        _pages[index] = HomeContent(
+          fName: widget.firstname,
+          id: widget.id,
+          token: widget.token,
+        );
+        break;
+      case 1:
+        _pages[index] = OrderPage(id: widget.id);
+        break;
+      case 2:
+        _pages[index] = Setting(
+          token: widget.token,
+          id: widget.id,
+          userType: widget.userType,
+        );
+        break;
+      default:
+        throw Exception('Invalid index');
+    }
   }
 }
 
@@ -178,7 +195,8 @@ class _HomeContentState extends State<HomeContent> {
                   MaterialPageRoute(
                     builder: (context) => choose_date(
                       userId: widget.id,
-                      searchedName: _searchController.text,
+                      token: widget.token,
+                      searchedPlace: _searchController.text,
                       placeId: selectedPlaceIds.isNotEmpty
                           ? selectedPlaceIds[0]
                           : null,
@@ -361,8 +379,8 @@ class _HomeContentState extends State<HomeContent> {
       final response = await http.get(Uri.parse(url), headers: {
         // 'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
         // 'X-RapidAPI-Host': 'map-places.p.rapidapi.com',
-        // 'X-RapidAPI-Key': 'a88524bacbmsh8555d6176540d30p12eba9jsn717b2697281b',
-        // 'X-RapidAPI-Host': 'map-places.p.rapidapi.com'
+        'X-RapidAPI-Key': 'ac32ecde13mshf879c91aebb3615p16b249jsnbbd5daf1b7ca',
+        'X-RapidAPI-Host': 'map-places.p.rapidapi.com'
       });
 
       if (response.statusCode == 200) {

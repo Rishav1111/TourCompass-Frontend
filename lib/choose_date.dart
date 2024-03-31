@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/guide_list.dart';
 
 class choose_date extends StatefulWidget {
-  final String? searchedName;
+  final String searchedPlace;
+  final String? token;
   final String? placeId;
-  final String? userId;
+  final String userId;
 
-  const choose_date({Key? key, this.userId, this.searchedName, this.placeId})
+  const choose_date(
+      {Key? key,
+      required this.userId,
+      this.token,
+      required this.searchedPlace,
+      this.placeId})
       : super(key: key);
 
   @override
@@ -93,7 +100,28 @@ class _choose_dateState extends State<choose_date> {
                 });
               },
             ),
-            CustomButton(text: "Search Guide", onPressed: () {}),
+            SizedBox(height: 15),
+            Center(
+              child: CustomButton(
+                  text: "Search Guide",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GuideListPage(
+                          token: widget.token,
+                          userId: widget.userId,
+                          searchedPlace: widget.searchedPlace,
+                          selectedDate: DateTime(
+                            _selectedDay.year,
+                            _selectedDay.month,
+                            _selectedDay.day,
+                          ).toString(),
+                        ),
+                      ),
+                    );
+                  }),
+            ),
           ],
         ),
       ),

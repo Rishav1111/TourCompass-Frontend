@@ -183,7 +183,6 @@ class _VerifyOtpState extends State<VerifyOtp> {
                         GestureDetector(
                           onTap: () {
                             resentemail();
-                            // Navigate to SignupPage
                           },
                           // Adjust the spacing as needed
                           child: Text(

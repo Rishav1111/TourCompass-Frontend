@@ -29,7 +29,7 @@ class GuideHomeState extends State<GuideHome> {
 
     _pages = [
       GuideHomeContent(fName: widget.firstname),
-      const OrderPage(),
+      // const OrderPage(),
       Setting(
         id: widget.id,
         userType: widget.userType,
