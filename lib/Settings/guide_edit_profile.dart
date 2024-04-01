@@ -123,15 +123,6 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
       if (response.statusCode == 200) {
         // Successful update
         print('User updated successfully');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GuideProfile(
-              id: widget.id,
-              token: widget.token,
-            ),
-          ),
-        );
       } else {
         // Handle API error
         print('Failed to update user. Status code: ${response.statusCode}');
@@ -156,10 +147,11 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
 
     try {
       await updateUser(updatedData);
-      showCustomSnackBar(context, 'Profile Updated Successfullly!',
+      showCustomSnackBar(context, 'Profile Updated Successfully!',
           backgroundColor: Colors.green);
+      setState(() {}); // Refresh the UI
     } catch (error) {
-      showCustomSnackBar(context, 'Fail to update Profile',
+      showCustomSnackBar(context, 'Failed to update Profile',
           backgroundColor: Colors.red);
     }
   }

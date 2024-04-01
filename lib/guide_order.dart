@@ -3,16 +3,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
 
-class OrderPage extends StatefulWidget {
+class GuideOrderPage extends StatefulWidget {
   final String id;
-  const OrderPage({required this.id, super.key});
+  const GuideOrderPage({required this.id, super.key});
 
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<GuideOrderPage> createState() => _GuideOrderPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
-  List<Map<String, dynamic>> guideList = [];
+class _GuideOrderPageState extends State<GuideOrderPage> {
+  List<Map<String, dynamic>> travelerList = [];
   bool isLoading = true;
 
   @override
@@ -25,17 +25,20 @@ class _OrderPageState extends State<OrderPage> {
   Future<void> fetchGuideData() async {
     try {
       final response = await http.get(
-        Uri.parse('${url}bookings/${widget.id}/guide'),
+        Uri.parse('${url}bookings/${widget.id}/traveler'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
 
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
-        guideList = List<Map<String, dynamic>>.from(json.decode(response.body));
-        print(guideList);
+        travelerList =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+        print(travelerList);
       } else {
-        throw Exception('Failed to load guide data');
+        throw Exception('Failed to load traveler data');
       }
     } catch (error) {
       print('Error fetching guide data: $error');
@@ -74,7 +77,7 @@ class _OrderPageState extends State<OrderPage> {
         padding: const EdgeInsets.all(8.0),
         child: isLoading
             ? Center(child: CircularProgressIndicator())
-            : guideList.isEmpty
+            : travelerList.isEmpty
                 ? Center(
                     child: Text(
                       'No Orders',
@@ -85,16 +88,14 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: guideList.length,
+                    itemCount: travelerList.length,
                     itemBuilder: (context, index) {
                       return BookingCard(
-                        firstname: guideList[index]['firstname'],
-                        lastname: guideList[index]['lastname'],
-                        expertPlace: guideList[index]['expertPlace'],
-                        guidePhoto: guideList[index]['guidePhoto'],
-                        status: guideList[index]['status'],
-                        negotiatedPrice: guideList[index]['negotiatedPrice'],
-                        travelDate: guideList[index]['travelDate'],
+                        firstname: travelerList[index]['firstname'],
+                        lastname: travelerList[index]['lastname'],
+                        destination: travelerList[index]['destination'],
+                        status: travelerList[index]['status'],
+                        travelDate: travelerList[index]['travelDate'],
                       );
                     },
                   ),
@@ -104,22 +105,18 @@ class _OrderPageState extends State<OrderPage> {
 }
 
 class BookingCard extends StatelessWidget {
-  final String firstname;
-  final String lastname;
-  final String? expertPlace;
-  final String guidePhoto;
-  final String status;
+  final String? firstname;
+  final String? lastname;
+  final String? destination;
+  final String? status;
   final String? travelDate;
-  final int negotiatedPrice;
 
   const BookingCard({
     required this.firstname,
     required this.lastname,
-    this.expertPlace,
-    required this.guidePhoto,
+    required this.destination,
     required this.status,
-    this.travelDate,
-    required this.negotiatedPrice,
+    required this.travelDate,
   });
 
   @override
@@ -132,62 +129,53 @@ class BookingCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
-          leading: Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(60 / 2),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(guidePhoto),
-              ),
-            ),
-          ),
           title: Text(
-            '$firstname $lastname',
+            '${firstname ?? 'Unknown'} ${lastname ?? 'Unknown'}',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
-          subtitle: Row(
+          subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(expertPlace ?? 'Unknown'),
-                    SizedBox(height: 4),
-                    Text(
-                      travelDate != null
-                          ? '${DateTime.parse(travelDate!).month}/${DateTime.parse(travelDate!).day}/${DateTime.parse(travelDate!).year}'
-                          : "Unknown",
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 14,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Text(
-                      status,
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 16,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
+              Text(destination ?? 'Unknown'),
+              SizedBox(
+                height: 4,
               ),
               Text(
-                "Rs. " + negotiatedPrice.toString(),
+                travelDate != null
+                    ? '${DateTime.parse(travelDate!).month}/${DateTime.parse(travelDate!).day}/${DateTime.parse(travelDate!).year}'
+                    : "Unknown",
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
-                  fontSize: 20,
-                  color: Color.fromARGB(255, 229, 40, 11),
+                  fontSize: 14,
+                  color: Colors.black,
                 ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 120,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Confirm'),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                    width: 120,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Cancel'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

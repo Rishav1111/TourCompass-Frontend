@@ -113,15 +113,15 @@ class _EditProfileState extends State<EditProfile> {
         // Successful update
         print('User updated successfully');
         print(updatedData);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Profile(
-              token: widget.token,
-              id: widget.id,
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => Profile(
+        //       token: widget.token,
+        //       id: widget.id,
+        //     ),
+        //   ),
+        // );
       } else {
         // Handle API error
         print('Failed to update user. Status code: ${response.statusCode}');

@@ -177,11 +177,8 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => Home(
-                    id: userid,
-                    firstname: firstname,
-                    userType: userType,
-                    token: token),
+                builder: (context) =>
+                    Home(id: userid, userType: userType, token: token),
               ),
             );
           } else if (userType == 'guide') {

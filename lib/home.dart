@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tourcompass/Utils/navbar.dart';
 import 'package:tourcompass/choose_date.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/order.dart';
@@ -11,15 +12,10 @@ import 'package:tourcompass/Settings/settings.dart';
 
 class Home extends StatefulWidget {
   final String id;
-  final String firstname;
   final String userType;
   final String token;
   const Home(
-      {required this.id,
-      required this.firstname,
-      required this.token,
-      required this.userType,
-      Key? key})
+      {required this.id, required this.token, required this.userType, Key? key})
       : super(key: key);
 
   @override
@@ -28,40 +24,40 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   int _selectedIndex = 0;
-  List<Widget?> _pages = List.filled(3, null);
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize all pages
+    _initPages();
+  }
+
+  void _initPages() {
+    _pages = [
+      HomeContent(
+        id: widget.id,
+        token: widget.token,
+      ),
+      OrderPage(id: widget.id),
+      Setting(
+        token: widget.token,
+        id: widget.id,
+        userType: widget.userType,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: _pages.map((page) {
-          if (page == null) {
-            return Container(); // Placeholder widget while page is loading
-          }
-          return page;
-        }).toList(),
+        children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_filled),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Orders',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.black,
-        onTap: _onItemTapped,
-        backgroundColor: Colors.orange[900],
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
@@ -69,46 +65,17 @@ class HomeState extends State<Home> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      if (_pages[index] == null) {
-        _initPage(index);
-      }
     });
-  }
-
-  void _initPage(int index) {
-    switch (index) {
-      case 0:
-        _pages[index] = HomeContent(
-          fName: widget.firstname,
-          id: widget.id,
-          token: widget.token,
-        );
-        break;
-      case 1:
-        _pages[index] = OrderPage(id: widget.id);
-        break;
-      case 2:
-        _pages[index] = Setting(
-          token: widget.token,
-          id: widget.id,
-          userType: widget.userType,
-        );
-        break;
-      default:
-        throw Exception('Invalid index');
-    }
   }
 }
 
 class HomeContent extends StatefulWidget {
-  final String fName;
   final String token;
   final String id;
 
   const HomeContent({
     Key? key,
     required this.id,
-    required this.fName,
     required this.token,
   }) : super(key: key);
 

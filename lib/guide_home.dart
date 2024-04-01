@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tourcompass/guide_order.dart';
 import 'package:tourcompass/order.dart';
 import 'package:tourcompass/Settings/settings.dart';
 
@@ -29,7 +30,9 @@ class GuideHomeState extends State<GuideHome> {
 
     _pages = [
       GuideHomeContent(fName: widget.firstname),
-      // const OrderPage(),
+      GuideOrderPage(
+        id: widget.id,
+      ),
       Setting(
         id: widget.id,
         userType: widget.userType,

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Settings/guide_edit_profile.dart';
 import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/Utils/scaffold.dart';
 import 'package:tourcompass/config.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class GuideProfile extends StatefulWidget {
   final String id;
@@ -71,6 +74,70 @@ class _GuideProfileState extends State<GuideProfile> {
     );
   }
 
+  Future<void> _uploadPhoto() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      try {
+        final url =
+            Uri.parse('https://api.cloudinary.com/v1_1/dxk0tmis1/upload');
+        final request = http.MultipartRequest('POST', url)
+          ..fields['upload_preset'] = 'tn0z9oer'
+          ..files.add(await http.MultipartFile.fromPath('file', pickedFile.path,
+              filename: path.basename(pickedFile.path)));
+
+        final response = await request.send();
+        if (response.statusCode == 200) {
+          final responseData = await response.stream.bytesToString();
+          final decodedData = json.decode(responseData);
+          final guidePhotoUrl = decodedData['secure_url'];
+
+          // Update the guide photo URL in the database
+          final updatedData = {'guidePhoto': guidePhotoUrl};
+          await updateUser(updatedData);
+
+          // Show success message
+          showCustomSnackBar(context, 'Image Uploaded Successfully',
+              backgroundColor: Colors.green);
+        } else {
+          print('Failed to upload image: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Exception during image upload: $e');
+      }
+    } else {
+      // User canceled the image selection
+    }
+  }
+
+  Future<void> updateUser(Map<String, dynamic> updatedData) async {
+    final String apiUrl = '${url}updateGuide/${widget.id}';
+
+    try {
+      final http.Response response = await http.put(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${widget.token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(updatedData),
+      );
+
+      if (response.statusCode == 200) {
+        // Successful update
+        print('User updated successfully');
+      } else {
+        // Handle API error
+        print('Failed to update user. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (error) {
+      // Handle network or other errors
+      print('Error updating user: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,19 +191,28 @@ class _GuideProfileState extends State<GuideProfile> {
                       children: [
                         Column(
                           children: [
-                            ClipOval(
-                              child: Image.network(
-                                data['licensePhoto'],
-                                height: 150,
-                                width: 150,
-                                fit: BoxFit.cover,
+                            GestureDetector(
+                              onTap: _uploadPhoto,
+                              child: Column(
+                                children: [
+                                  ClipOval(
+                                    child: Image.network(
+                                      data['guidePhoto'],
+                                      height: 150,
+                                      width: 150,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    "Edit Photo",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              "Edit Photo",
-                              style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

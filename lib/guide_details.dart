@@ -59,13 +59,14 @@ class _Guide_DetailsState extends State<Guide_Details> {
     });
   }
 
-  Future<void> createBookingRequest() async {
+  Future<void> createBookingRequest(int negotiatedPrice) async {
     try {
       final Map<String, dynamic> requestBody = {
         'travelerId': widget.userId,
         'guideId': widget.guideId,
         'destination': widget.searchedPlace,
         'travelDate': widget.selectedDate,
+        'negotiatedPrice': negotiatedPrice,
       };
 
       final response = await http.post(
@@ -237,7 +238,9 @@ class _Guide_DetailsState extends State<Guide_Details> {
             const SizedBox(height: 20),
             CustomButton(
               text: "Send Request",
-              onPressed: createBookingRequest,
+              onPressed: () async {
+                await createBookingRequest(guidePrice);
+              },
             ),
           ],
         ),

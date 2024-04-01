@@ -7,9 +7,11 @@ import 'package:tourcompass/config.dart';
 
 class Profile extends StatefulWidget {
   final String id;
+  final String userType;
   final token;
 
-  const Profile({required this.id, required this.token, super.key});
+  const Profile(
+      {required this.id, required this.userType, this.token, super.key});
 
   @override
   State<Profile> createState() => _ProfileState();

@@ -118,6 +118,7 @@ class _SettingState extends State<Setting> {
                           MaterialPageRoute(
                             builder: (context) => Profile(
                               id: widget.id,
+                              userType: widget.userType,
                               token: widget.token,
                             ),
                           ),
