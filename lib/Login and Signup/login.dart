@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/Utils/guide_navbar.dart';
+import 'package:tourcompass/Utils/navbar.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/Login%20and%20Signup/signup.dart';
 import 'package:tourcompass/guide_home.dart';
@@ -177,8 +179,8 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    Home(id: userid, userType: userType, token: token),
+                builder: (context) => NavigationMenu(
+                    id: userid, userType: userType, token: token),
               ),
             );
           } else if (userType == 'guide') {
@@ -187,12 +189,8 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => GuideHome(
-                  id: userid,
-                  firstname: firstname,
-                  userType: userType,
-                  token: token,
-                ),
+                builder: (context) => GuideNavigationMenu(
+                    id: userid, userType: userType, token: token),
               ),
             );
           }

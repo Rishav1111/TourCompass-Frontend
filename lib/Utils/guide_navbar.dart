@@ -1,51 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tourcompass/Settings/settings.dart';
+import 'package:tourcompass/guide_home.dart';
+import 'package:tourcompass/guide_order.dart';
 import 'package:tourcompass/home.dart';
 import 'package:tourcompass/order.dart';
 
-// class CustomBottomNavigationBar extends StatelessWidget {
-//   final int selectedIndex;
-//   final Function(int) onItemTapped;
-
-//   const CustomBottomNavigationBar({
-//     required this.selectedIndex,
-//     required this.onItemTapped,
-//     Key? key,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BottomNavigationBar(
-//       items: const <BottomNavigationBarItem>[
-//         BottomNavigationBarItem(
-//           icon: Icon(Icons.home_filled),
-//           label: 'Home',
-//         ),
-//         BottomNavigationBarItem(
-//           icon: Icon(Icons.list),
-//           label: 'Orders',
-//         ),
-//         BottomNavigationBarItem(
-//           icon: Icon(Icons.settings),
-//           label: 'Settings',
-//         ),
-//       ],
-//       currentIndex: selectedIndex,
-//       unselectedItemColor: Colors.white,
-//       selectedItemColor: Colors.black,
-//       onTap: onItemTapped,
-//       backgroundColor: Colors.orange[900],
-//     );
-//   }
-// }
-
-class NavigationMenu extends StatefulWidget {
+class GuideNavigationMenu extends StatefulWidget {
   final String id;
   final String userType;
   final String token;
 
-  const NavigationMenu({
+  const GuideNavigationMenu({
     required this.id,
     required this.token,
     required this.userType,
@@ -53,10 +19,10 @@ class NavigationMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<NavigationMenu> createState() => _NavigationMenuState();
+  State<GuideNavigationMenu> createState() => _NavigationMenuState();
 }
 
-class _NavigationMenuState extends State<NavigationMenu> {
+class _NavigationMenuState extends State<GuideNavigationMenu> {
   int index = 0;
   late final List<Widget> screens;
 
@@ -64,8 +30,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
   void initState() {
     super.initState();
     screens = [
-      HomeContent(id: widget.id, token: widget.token),
-      OrderPage(id: widget.id),
+      GuideHomeContent(),
+      GuideOrderPage(id: widget.id),
       Setting(token: widget.token, id: widget.id, userType: widget.userType),
     ];
   }

@@ -4,70 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tourcompass/Utils/navbar.dart';
 import 'package:tourcompass/choose_date.dart';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/order.dart';
-import 'package:tourcompass/Settings/settings.dart';
-
-class Home extends StatefulWidget {
-  final String id;
-  final String userType;
-  final String token;
-  const Home(
-      {required this.id, required this.token, required this.userType, Key? key})
-      : super(key: key);
-
-  @override
-  State<Home> createState() => HomeState();
-}
-
-class HomeState extends State<Home> {
-  int _selectedIndex = 0;
-  late List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize all pages
-    _initPages();
-  }
-
-  void _initPages() {
-    _pages = [
-      HomeContent(
-        id: widget.id,
-        token: widget.token,
-      ),
-      OrderPage(id: widget.id),
-      Setting(
-        token: widget.token,
-        id: widget.id,
-        userType: widget.userType,
-      ),
-    ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
-    );
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-}
 
 class HomeContent extends StatefulWidget {
   final String token;
@@ -108,6 +46,7 @@ class _HomeContentState extends State<HomeContent> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'TourCompass',
           style: TextStyle(
