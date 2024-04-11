@@ -22,7 +22,7 @@ class CustomButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25), // Button border radius
         ),
-        minimumSize: const Size(180, 10), // Minimum button size (width, height)
+        minimumSize: const Size(150, 10), // Minimum button size (width, height)
       ),
       child: Text(
         text,
