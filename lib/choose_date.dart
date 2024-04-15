@@ -112,11 +112,7 @@ class _choose_dateState extends State<choose_date> {
                           token: widget.token,
                           userId: widget.userId,
                           searchedPlace: widget.searchedPlace,
-                          selectedDate: DateTime(
-                            _selectedDay.year,
-                            _selectedDay.month,
-                            _selectedDay.day,
-                          ).toString(),
+                          selectedDate: _selectedDay.toUtc().toIso8601String(),
                         ),
                       ),
                     );

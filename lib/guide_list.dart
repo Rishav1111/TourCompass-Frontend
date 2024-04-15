@@ -9,14 +9,14 @@ class GuideListPage extends StatefulWidget {
   final String? token;
   final String userId;
   final String searchedPlace;
-  final String? selectedDate;
+  final String selectedDate;
 
   const GuideListPage(
       {super.key,
       required this.token,
       required this.userId,
       required this.searchedPlace,
-      this.selectedDate});
+      required this.selectedDate});
 
   @override
   State<GuideListPage> createState() => _GuideListPageState();
@@ -29,23 +29,24 @@ class _GuideListPageState extends State<GuideListPage> {
   @override
   void initState() {
     super.initState();
-    fetchUser(widget.searchedPlace);
+    fetchUser(widget.searchedPlace, widget.selectedDate);
   }
 
-  Future<void> fetchUser(String searchedPlace) async {
+  Future<void> fetchUser(String searchedPlace, String selectedDate) async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('${url}getGuideBySearch?search=$searchedPlace'),
+        Uri.parse(
+            '${url}getGuideBySearch?search=$searchedPlace&date=$selectedDate'),
         headers: {'Authorization': 'Bearer ${widget.token}'},
       );
 
       if (response.statusCode == 200) {
         var items = json.decode(response.body);
-        print(widget.searchedPlace);
-        print(widget.selectedDate);
+        print(searchedPlace);
+        print(selectedDate);
         setState(() {
           guides = items;
           isLoading = false;

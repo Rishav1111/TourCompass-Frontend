@@ -30,7 +30,7 @@ class _NavigationMenuState extends State<GuideNavigationMenu> {
   void initState() {
     super.initState();
     screens = [
-      GuideHomeContent(),
+      GuideHomeContent(token: widget.token, id: widget.id),
       GuideOrderPage(id: widget.id),
       Setting(token: widget.token, id: widget.id, userType: widget.userType),
     ];

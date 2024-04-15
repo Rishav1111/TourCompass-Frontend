@@ -25,9 +25,34 @@ class _HomeContentState extends State<HomeContent> {
   late GoogleMapController googleMapController;
   Position? _currentPosition;
   bool _placeSearched = false;
+  late CameraPosition _initialCameraPosition;
 
-  static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(27.6710221, 85.4298197), zoom: 14);
+  @override
+  void initState() {
+    super.initState();
+    _getInitialCameraPosition();
+  }
+
+  Future<void> _getInitialCameraPosition() async {
+    final String apiUrl = '${url}getUserLocation/${widget.id}';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final double latitude = data['latitude'];
+      final double longitude = data['longitude'];
+
+      print(latitude);
+      print(longitude);
+
+      setState(() {
+        _initialCameraPosition =
+            CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
+      });
+    } else {
+      // Handle error
+    }
+  }
 
   Set<Marker> markers = {};
   List<String> autocompleteResults = [];
@@ -156,7 +181,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildGoogleMap() {
     return GoogleMap(
-      initialCameraPosition: initialCameraPosition,
+      initialCameraPosition: _initialCameraPosition,
       markers: markers,
       zoomControlsEnabled: false,
       mapType: MapType.normal,
@@ -317,13 +342,12 @@ class _HomeContentState extends State<HomeContent> {
         .animateCamera(CameraUpdate.newCameraPosition(kSelectedPlace));
 
     setState(() {
-      // markers.clear();
+      markers.clear();
       markers.add(Marker(
         markerId: const MarkerId('SelectedPlace'),
         position: location,
         infoWindow: const InfoWindow(
           title: 'Selected Place',
-          snippet: 'Place Description',
         ),
       ));
 
@@ -375,14 +399,17 @@ class _HomeContentState extends State<HomeContent> {
       ),
     );
 
-    // markers.clear();
-    markers.add(
-      Marker(
-        markerId: const MarkerId('CurrentLocation'),
-        position: LatLng(latitude, longitude),
-      ),
-    );
-
-    setState(() {});
+    setState(() {
+      // markers.clear();
+      markers.add(
+        Marker(
+          markerId: const MarkerId('CurrentLocation'),
+          position: LatLng(latitude, longitude),
+          infoWindow: InfoWindow(
+            title: 'Current Location',
+          ),
+        ),
+      );
+    });
   }
 }
