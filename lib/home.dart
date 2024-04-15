@@ -317,7 +317,7 @@ class _HomeContentState extends State<HomeContent> {
         .animateCamera(CameraUpdate.newCameraPosition(kSelectedPlace));
 
     setState(() {
-      markers.clear();
+      // markers.clear();
       markers.add(Marker(
         markerId: const MarkerId('SelectedPlace'),
         position: location,
@@ -375,7 +375,7 @@ class _HomeContentState extends State<HomeContent> {
       ),
     );
 
-    markers.clear();
+    // markers.clear();
     markers.add(
       Marker(
         markerId: const MarkerId('CurrentLocation'),

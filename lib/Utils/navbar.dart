@@ -74,7 +74,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBarTheme(
-        data: NavigationBarThemeData(
+        data: const NavigationBarThemeData(
           indicatorColor: Color.fromARGB(255, 237, 113, 51),
         ),
         child: NavigationBar(
