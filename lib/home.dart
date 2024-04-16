@@ -6,15 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tourcompass/choose_date.dart';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class HomeContent extends StatefulWidget {
-  final String token;
-  final String id;
-
   const HomeContent({
     Key? key,
-    required this.id,
-    required this.token,
   }) : super(key: key);
 
   @override
@@ -34,7 +30,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Future<void> _getInitialCameraPosition() async {
-    final String apiUrl = '${url}getUserLocation/${widget.id}';
+    final String apiUrl = '${url}getUserLocation/${userToken['id']}';
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
@@ -125,8 +121,7 @@ class _HomeContentState extends State<HomeContent> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => choose_date(
-                      userId: widget.id,
-                      token: widget.token,
+                      userId: userToken['id'],
                       searchedPlace: _searchController.text,
                       placeId: selectedPlaceIds.isNotEmpty
                           ? selectedPlaceIds[0]
@@ -310,7 +305,7 @@ class _HomeContentState extends State<HomeContent> {
       final response = await http.get(Uri.parse(url), headers: {
         // 'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
         // 'X-RapidAPI-Host': 'map-places.p.rapidapi.com',
-        'X-RapidAPI-Key': 'ac32ecde13mshf879c91aebb3615p16b249jsnbbd5daf1b7ca',
+        'X-RapidAPI-Key': '9ca9f46dc5msh278ffc74a5d57fbp1b02eajsn8c41589d1474',
         'X-RapidAPI-Host': 'map-places.p.rapidapi.com'
       });
 
@@ -368,7 +363,7 @@ class _HomeContentState extends State<HomeContent> {
     double longitude = position.longitude;
     String apiUrl = '$url/saveLocation';
     Map<String, dynamic> body = {
-      'userId': widget.id,
+      'userId': userToken['id'],
       'latitude': latitude,
       'longitude': longitude,
     };

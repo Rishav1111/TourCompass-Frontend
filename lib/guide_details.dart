@@ -81,10 +81,10 @@ class _Guide_DetailsState extends State<Guide_Details> {
         print('Booking requested successfully');
 
         showCustomSnackBar(context, "Your booking request has been sent!");
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => OrderPage()),
-        // );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => OrderPage()),
+        );
       } else {
         print('Failed to create booking. Status code: ${response.statusCode}');
         print(widget.searchedPlace);

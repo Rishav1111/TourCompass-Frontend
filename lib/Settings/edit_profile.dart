@@ -6,6 +6,7 @@ import 'package:tourcompass/Settings/profile_info.dart';
 import 'package:tourcompass/Utils/Scaffold.dart';
 import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -58,16 +59,12 @@ class CustomTextField extends StatelessWidget {
 }
 
 class EditProfile extends StatefulWidget {
-  final String id;
-  final String token;
   final String firstName;
   final String lastName;
   final String email;
   final String phoneNumber;
 
   EditProfile({
-    required this.id,
-    required this.token,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -96,14 +93,13 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> updateUser(Map<String, dynamic> updatedData) async {
-    final String apiUrl = '${url}updateTraveller/${widget.id}';
-    print(widget.token);
+    final String apiUrl = '${url}updateTraveller/${userToken['id']}';
 
     try {
       final http.Response response = await http.put(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer ${token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),
@@ -113,15 +109,12 @@ class _EditProfileState extends State<EditProfile> {
         // Successful update
         print('User updated successfully');
         print(updatedData);
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => Profile(
-        //       token: widget.token,
-        //       id: widget.id,
-        //     ),
-        //   ),
-        // );
+        Navigator.pop(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Profile(),
+          ),
+        );
       } else {
         // Handle API error
         print('Failed to update user. Status code: ${response.statusCode}');

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -111,11 +112,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
 }
 
 class ChangePassword extends StatefulWidget {
-  final String id;
   final String token;
 
   const ChangePassword({
-    required this.id,
     required this.token,
     Key? key,
   }) : super(key: key);
@@ -159,7 +158,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
     try {
       final http.Response response = await http.put(
-        Uri.parse('${url}/changePassword/${widget.id}'),
+        Uri.parse('${url}/changePassword/${userToken['id']}'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',

@@ -7,6 +7,7 @@ import 'package:tourcompass/Utils/navbar.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/Login%20and%20Signup/signup.dart';
 import 'package:tourcompass/guide_home.dart';
+import 'package:tourcompass/main.dart';
 import 'package:tourcompass/forgetPassword/send_email.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/home.dart';
@@ -160,15 +161,17 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         // Successful login
         var responseBody = jsonDecode(response.body);
-        var token = responseBody['token'];
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+        var myToken = responseBody['token'];
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(myToken);
+        userToken = decodedToken;
+        token = myToken;
 
         String userType = decodedToken['userType'];
         String userid = decodedToken['id'];
         String firstname = decodedToken['firstname'];
         if (token != null) {
           // Save token and userType in SharedPreferences or another storage mechanism
-          await prefs.setString('token', token);
+          await prefs.setString('token', myToken);
           // await prefs.setString('userType', userType);
 
           print("hello");
@@ -179,8 +182,7 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => NavigationMenu(
-                    id: userid, userType: userType, token: token),
+                builder: (context) => NavigationMenu(),
               ),
             );
           } else if (userType == 'guide') {

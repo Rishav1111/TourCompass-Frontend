@@ -7,13 +7,10 @@ import 'package:tourcompass/Utils/scaffold.dart';
 import 'package:tourcompass/config.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:tourcompass/main.dart';
 
 class GuideProfile extends StatefulWidget {
-  final String id;
-  final String token;
-
-  const GuideProfile({required this.id, required this.token, Key? key})
-      : super(key: key);
+  const GuideProfile({Key? key}) : super(key: key);
 
   @override
   State<GuideProfile> createState() => _GuideProfileState();
@@ -25,14 +22,15 @@ class _GuideProfileState extends State<GuideProfile> {
   @override
   void initState() {
     super.initState();
-    _profileData = fetchData();
+    String myToken = token;
+    _profileData = fetchData(myToken);
   }
 
-  Future<Map<String, dynamic>> fetchData() async {
+  Future<Map<String, dynamic>> fetchData(String myToken) async {
     try {
       final response = await http.get(
-        Uri.parse('${url}getGuide/${widget.id}'),
-        headers: {'Authorization': 'Bearer ${widget.token}'},
+        Uri.parse('${url}getGuide/${userToken['id']}'),
+        headers: {'Authorization': 'Bearer ${token}'},
       );
 
       if (response.statusCode == 200) {
@@ -112,13 +110,13 @@ class _GuideProfileState extends State<GuideProfile> {
   }
 
   Future<void> updateUser(Map<String, dynamic> updatedData) async {
-    final String apiUrl = '${url}updateGuide/${widget.id}';
+    final String apiUrl = '${url}updateGuide/${userToken['id']}';
 
     try {
       final http.Response response = await http.put(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer ${token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),
@@ -233,8 +231,6 @@ class _GuideProfileState extends State<GuideProfile> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => GuideEditProfile(
-                              token: widget.token,
-                              id: widget.id,
                               firstName: data['firstname'],
                               lastName: data['lastname'],
                               email: data['email'],

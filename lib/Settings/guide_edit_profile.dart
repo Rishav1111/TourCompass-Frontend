@@ -6,6 +6,7 @@ import 'package:tourcompass/Settings/guide_profile.dart';
 import 'package:tourcompass/Utils/Scaffold.dart';
 import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -58,8 +59,6 @@ class CustomTextField extends StatelessWidget {
 }
 
 class GuideEditProfile extends StatefulWidget {
-  final String token;
-  final String id;
   final String firstName;
   final String lastName;
   final String email;
@@ -69,8 +68,6 @@ class GuideEditProfile extends StatefulWidget {
   final String bio;
 
   GuideEditProfile({
-    required this.id,
-    required this.token,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -108,13 +105,13 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
   }
 
   Future<void> updateUser(Map<String, dynamic> updatedData) async {
-    final String apiUrl = '${url}updateGuide/${widget.id}';
+    final String apiUrl = '${url}updateGuide/${userToken['id']}';
 
     try {
       final http.Response response = await http.put(
         Uri.parse(apiUrl),
         headers: <String, String>{
-          'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer ${token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(updatedData),

@@ -4,14 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:tourcompass/Settings/edit_profile.dart';
 import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class Profile extends StatefulWidget {
-  final String id;
-  final String userType;
-  final token;
-
-  const Profile(
-      {required this.id, required this.userType, this.token, super.key});
+  const Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -26,14 +22,15 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    String myToken = token;
+    fetchData(myToken);
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchData(String myToken) async {
     try {
       final response = await http.get(
-        Uri.parse('${url}getTraveller/${widget.id}'),
-        headers: {'Authorization': 'Bearer ${widget.token}'},
+        Uri.parse('${url}getTraveller/${userToken['id']}'),
+        headers: {'Authorization': 'Bearer $myToken'},
       );
 
       if (response.statusCode == 200) {
@@ -132,8 +129,6 @@ class _ProfileState extends State<Profile> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => EditProfile(
-                        token: widget.token,
-                        id: widget.id,
                         firstName: firstname,
                         lastName: lastname,
                         email: email,

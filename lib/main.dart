@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:tourcompass/Login%20and%20Signup/admin_login.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
 
+late Map<String, dynamic> userToken;
+late String token;
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {

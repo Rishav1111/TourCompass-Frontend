@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class OrderPage extends StatefulWidget {
-  final String id;
-  const OrderPage({required this.id, super.key});
+  const OrderPage({super.key});
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -25,7 +25,7 @@ class _OrderPageState extends State<OrderPage> {
   Future<void> fetchGuideData() async {
     try {
       final response = await http.get(
-        Uri.parse('${url}bookings/${widget.id}/guide'),
+        Uri.parse('${url}bookings/${userToken['id']}/guide'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

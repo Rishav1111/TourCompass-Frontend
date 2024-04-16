@@ -4,6 +4,7 @@ import 'package:tourcompass/Settings/change_password.dart';
 import 'package:tourcompass/Settings/guide_profile.dart';
 import 'package:tourcompass/Settings/profile_info.dart';
 import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/main.dart';
 
 class SettingGestureRow extends StatelessWidget {
   final String label;
@@ -44,15 +45,8 @@ class SettingGestureRow extends StatelessWidget {
 }
 
 class Setting extends StatefulWidget {
-  final String id;
-  final String userType;
-  final String token;
-
   const Setting({
     super.key,
-    required this.token,
-    required this.id,
-    required this.userType,
   });
 
   State<Setting> createState() => _SettingState();
@@ -112,25 +106,18 @@ class _SettingState extends State<Setting> {
                   SettingGestureRow(
                     label: 'View Profile',
                     onTap: () {
-                      if (widget.userType == "traveller") {
+                      if (userToken['userType'] == "traveller") {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Profile(
-                              id: widget.id,
-                              userType: widget.userType,
-                              token: widget.token,
-                            ),
+                            builder: (context) => Profile(),
                           ),
                         );
                       } else {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => GuideProfile(
-                              id: widget.id,
-                              token: widget.token,
-                            ),
+                            builder: (context) => GuideProfile(),
                           ),
                         );
                       }
@@ -146,15 +133,12 @@ class _SettingState extends State<Setting> {
                   SettingGestureRow(
                     label: 'Change Password',
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChangePassword(
-                            id: widget.id,
-                            token: widget.token,
-                          ),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => ChangePassword(),
+                      //   ),
+                      // );
                     },
                   ),
                 ],

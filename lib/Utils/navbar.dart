@@ -41,14 +41,7 @@ import 'package:tourcompass/order.dart';
 // }
 
 class NavigationMenu extends StatefulWidget {
-  final String id;
-  final String userType;
-  final String token;
-
   const NavigationMenu({
-    required this.id,
-    required this.token,
-    required this.userType,
     Key? key,
   }) : super(key: key);
 
@@ -64,9 +57,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
   void initState() {
     super.initState();
     screens = [
-      HomeContent(id: widget.id, token: widget.token),
-      OrderPage(id: widget.id),
-      Setting(token: widget.token, id: widget.id, userType: widget.userType),
+      HomeContent(),
+      OrderPage(),
+      Setting(),
     ];
   }
 
