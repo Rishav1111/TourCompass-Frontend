@@ -21,33 +21,63 @@ class _HomeContentState extends State<HomeContent> {
   late GoogleMapController googleMapController;
   Position? _currentPosition;
   bool _placeSearched = false;
-  late CameraPosition _initialCameraPosition;
+  late final CameraPosition _initialCameraPosition = const CameraPosition(
+    target: LatLng(27.671022, 85.42982),
+    zoom: 14,
+  );
 
   @override
   void initState() {
     super.initState();
-    _getInitialCameraPosition();
+    _loadUserLocation();
   }
 
-  Future<void> _getInitialCameraPosition() async {
-    final String apiUrl = '${url}getUserLocation/${userToken['id']}';
-    final response = await http.get(Uri.parse(apiUrl));
+  Future<void> _loadUserLocation() async {
+    try {
+      final response =
+          await http.get(Uri.parse('$url/getUserLocation/${userToken['id']}'));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      final double latitude = data['latitude'];
-      final double longitude = data['longitude'];
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final double latitude = data['latitude'];
+        final double longitude = data['longitude'];
 
-      print(latitude);
-      print(longitude);
-
-      setState(() {
-        _initialCameraPosition =
-            CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
-      });
-    } else {
-      // Handle error
+        // Show user's last known location on the map
+        _showPlaceOnMap(LatLng(latitude, longitude));
+        await fetchGuideLocation();
+      } else {
+        // Handle error
+        print(
+            'Failed to load user location. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle errors
+      print('Error loading user location: $error');
     }
+  }
+
+  Future<void> fetchGuideLocation() async {
+    try {
+      final response =
+          await http.get(Uri.parse('$url/getGuideLocation/${userToken['id']}'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final guideLocations = data['guideLocations'];
+        for (var guideLocation in guideLocations) {
+          final latitude = guideLocation['latitude'];
+          final longitude = guideLocation['longitude'];
+          final markerId = MarkerId(guideLocation['userId']);
+          final marker = Marker(
+            markerId: markerId,
+            position: LatLng(latitude, longitude),
+            infoWindow: InfoWindow(title: 'Guide Location'),
+          );
+          setState(() {
+            markers.add(marker);
+          });
+        }
+      } else {}
+    } catch (error) {}
   }
 
   Set<Marker> markers = {};
@@ -104,6 +134,15 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
+  void _onCurrentLocationPressed() async {
+    try {
+      Position position = await _determinePosition();
+      _showCurrentLocation(position);
+    } catch (error) {
+      print('Error determining current location: $error');
+    }
+  }
+
   Widget _buildConfirmPlaceButton() {
     return Positioned(
       bottom: 90, // Adjust as per your UI requirements
@@ -121,7 +160,6 @@ class _HomeContentState extends State<HomeContent> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => choose_date(
-                      userId: userToken['id'],
                       searchedPlace: _searchController.text,
                       placeId: selectedPlaceIds.isNotEmpty
                           ? selectedPlaceIds[0]
@@ -337,7 +375,11 @@ class _HomeContentState extends State<HomeContent> {
         .animateCamera(CameraUpdate.newCameraPosition(kSelectedPlace));
 
     setState(() {
-      markers.clear();
+      // Remove the existing default marker for the current location
+      markers
+          .removeWhere((marker) => marker.markerId.value == 'CurrentLocation');
+
+      // Add a new marker for the selected place
       markers.add(Marker(
         markerId: const MarkerId('SelectedPlace'),
         position: location,
@@ -346,15 +388,14 @@ class _HomeContentState extends State<HomeContent> {
         ),
       ));
 
-      if (_currentPosition != null) {
-        markers.add(
-          Marker(
-            markerId: const MarkerId('CurrentLocation'),
-            position:
-                LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          ),
-        );
-      }
+      // Add a marker for the current location
+      markers.add(Marker(
+        markerId: const MarkerId('CurrentLocation'),
+        position: location, // Set position to the selected location
+        infoWindow: const InfoWindow(
+          title: 'Current Location',
+        ),
+      ));
     });
   }
 
@@ -378,6 +419,7 @@ class _HomeContentState extends State<HomeContent> {
       // Check if the request was successful
       if (response.statusCode == 200) {
         // Handle success
+        print(body);
         print('Location saved successfully');
       } else {
         // Handle other status codes
@@ -395,12 +437,13 @@ class _HomeContentState extends State<HomeContent> {
     );
 
     setState(() {
-      // markers.clear();
+      markers
+          .removeWhere((marker) => marker.markerId.value == 'CurrentLocation');
       markers.add(
         Marker(
           markerId: const MarkerId('CurrentLocation'),
           position: LatLng(latitude, longitude),
-          infoWindow: InfoWindow(
+          infoWindow: const InfoWindow(
             title: 'Current Location',
           ),
         ),

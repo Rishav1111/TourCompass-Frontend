@@ -135,9 +135,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   String? _validatePassword(String value) {
     // Password validation regex
-    String passwordPattern =
-        r'^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
-    RegExp regExp = new RegExp(passwordPattern);
+    String passwordPattern = r'^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]{8,}$';
+    RegExp regExp = RegExp(passwordPattern);
 
     if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
       return 'Password must contain at least 8 characters, one uppercase letter, and one special character';

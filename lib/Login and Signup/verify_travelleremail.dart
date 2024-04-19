@@ -68,7 +68,7 @@ class _VerifyTravellerEmailOtp extends State<VerifyTravellerEmailOtp> {
         );
       } else {
         showCustomSnackBar(context, 'Invalid Pin!',
-            backgroundColor: Colors.green);
+            backgroundColor: Colors.red);
       }
     } catch (e) {
       print(e);

@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:tourcompass/Utils/button.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class GuideOrderPage extends StatefulWidget {
-  final String id;
-  const GuideOrderPage({required this.id, super.key});
+  const GuideOrderPage({super.key});
 
   @override
   State<GuideOrderPage> createState() => _GuideOrderPageState();
@@ -26,7 +26,7 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
   Future<void> fetchGuideData() async {
     try {
       final response = await http.get(
-        Uri.parse('${url}bookings/${widget.id}/traveler'),
+        Uri.parse('${url}bookings/${userToken['id']}/traveler'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

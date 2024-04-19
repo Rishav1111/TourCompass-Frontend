@@ -191,8 +191,7 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => GuideNavigationMenu(
-                    id: userid, userType: userType, token: token),
+                builder: (context) => GuideNavigationMenu(),
               ),
             );
           }

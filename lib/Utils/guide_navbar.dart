@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tourcompass/Settings/settings.dart';
 import 'package:tourcompass/guide_home.dart';
 import 'package:tourcompass/guide_order.dart';
-import 'package:tourcompass/home.dart';
-import 'package:tourcompass/order.dart';
+import 'package:tourcompass/main.dart';
 
 class GuideNavigationMenu extends StatefulWidget {
-  final String id;
-  final String userType;
-  final String token;
-
   const GuideNavigationMenu({
-    required this.id,
-    required this.token,
-    required this.userType,
     Key? key,
   }) : super(key: key);
 
@@ -30,8 +21,8 @@ class _NavigationMenuState extends State<GuideNavigationMenu> {
   void initState() {
     super.initState();
     screens = [
-      GuideHomeContent(token: widget.token, id: widget.id),
-      GuideOrderPage(id: widget.id),
+      GuideHomeContent(),
+      GuideOrderPage(),
       Setting(),
     ];
   }

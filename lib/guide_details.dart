@@ -5,6 +5,7 @@ import 'package:tourcompass/Utils/button.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Utils/scaffold.dart';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/home.dart';
 import 'package:tourcompass/order.dart';
 
 class Guide_Details extends StatefulWidget {
@@ -81,10 +82,10 @@ class _Guide_DetailsState extends State<Guide_Details> {
         print('Booking requested successfully');
 
         showCustomSnackBar(context, "Your booking request has been sent!");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => OrderPage()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomeContent()),
+        // );
       } else {
         print('Failed to create booking. Status code: ${response.statusCode}');
         print(widget.searchedPlace);

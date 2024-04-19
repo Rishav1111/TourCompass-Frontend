@@ -5,15 +5,11 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tourcompass/config.dart';
+import 'package:tourcompass/main.dart';
 
 class GuideHomeContent extends StatefulWidget {
-  final String token;
-  final String id;
-
   const GuideHomeContent({
     Key? key,
-    required this.id,
-    required this.token,
   }) : super(key: key);
 
   @override
@@ -23,35 +19,62 @@ class GuideHomeContent extends StatefulWidget {
 class _GuideHomeContentState extends State<GuideHomeContent> {
   late GoogleMapController googleMapController;
   Position? _currentPosition;
-  late CameraPosition _initialCameraPosition;
-
+  late final CameraPosition _initialCameraPosition = const CameraPosition(
+    target: LatLng(27.671022, 85.42982),
+    zoom: 14,
+  );
   @override
   void initState() {
     super.initState();
-    _getInitialCameraPosition();
+    _loadUserLocation();
   }
 
-  Future<void> _getInitialCameraPosition() async {
+  Future<void> _loadUserLocation() async {
     try {
-      final String apiUrl = '${url}getUserLocation/${widget.id}';
-      final response = await http.get(Uri.parse(apiUrl));
+      final response =
+          await http.get(Uri.parse('$url/getUserLocation/${userToken['id']}'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final double latitude = data['latitude'];
         final double longitude = data['longitude'];
 
-        setState(() {
-          _initialCameraPosition =
-              CameraPosition(target: LatLng(latitude, longitude), zoom: 14);
-        });
+        // Show user's last known location on the map
+        _showPlaceOnMap(LatLng(latitude, longitude));
+        await fetchTravelerLocation();
       } else {
-        throw Exception('Failed to fetch initial camera position');
+        // Handle error
+        print(
+            'Failed to load user location. Status code: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Error fetching initial camera position: $e');
-      // Handle error
+    } catch (error) {
+      // Handle errors
+      print('Error loading user location: $error');
     }
+  }
+
+  Future<void> fetchTravelerLocation() async {
+    try {
+      final response = await http
+          .get(Uri.parse('$url/getTravelerLocation/${userToken['id']}'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final travelerLocations = data['travelerLocation'];
+        for (var travelerLocation in travelerLocations) {
+          final latitude = travelerLocation['latitude'];
+          final longitude = travelerLocation['longitude'];
+          final markerId = MarkerId(travelerLocation['userId']);
+          final marker = Marker(
+            markerId: markerId,
+            position: LatLng(latitude, longitude),
+            infoWindow: InfoWindow(title: 'Traveler Location'),
+          );
+          setState(() {
+            markers.add(marker);
+          });
+        }
+      } else {}
+    } catch (error) {}
   }
 
   Set<Marker> markers = {};
@@ -103,7 +126,7 @@ class _GuideHomeContentState extends State<GuideHomeContent> {
     double longitude = position.longitude;
     String apiUrl = '$url/saveLocation';
     Map<String, dynamic> body = {
-      'userId': widget.id,
+      'userId': userToken['id'],
       'latitude': latitude,
       'longitude': longitude,
     };
@@ -116,6 +139,7 @@ class _GuideHomeContentState extends State<GuideHomeContent> {
       );
 
       if (response.statusCode == 200) {
+        print(body);
         print('Location saved successfully');
       } else {
         print('Failed to save location. Status code: ${response.statusCode}');
@@ -142,6 +166,26 @@ class _GuideHomeContentState extends State<GuideHomeContent> {
           ),
         ),
       );
+    });
+  }
+
+  Future<void> _showPlaceOnMap(LatLng location) async {
+    CameraPosition kSelectedPlace = CameraPosition(
+      target: location,
+      zoom: 12,
+    );
+
+    googleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(kSelectedPlace));
+    setState(() {
+      // Add a marker for the current location
+      markers.add(Marker(
+        markerId: const MarkerId('CurrentLocation'),
+        position: location, // Set position to the selected location
+        infoWindow: const InfoWindow(
+          title: 'Current Location',
+        ),
+      ));
     });
   }
 
