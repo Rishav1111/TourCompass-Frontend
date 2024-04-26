@@ -111,10 +111,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 }
 
 class ChangePassword extends StatefulWidget {
-  final String token;
-
   const ChangePassword({
-    required this.token,
     Key? key,
   }) : super(key: key);
 
@@ -159,7 +156,7 @@ class _ChangePasswordState extends State<ChangePassword> {
       final http.Response response = await http.put(
         Uri.parse('${url}/changePassword/${userToken['id']}'),
         headers: {
-          'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer ${token}',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(requestData),

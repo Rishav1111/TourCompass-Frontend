@@ -4,7 +4,9 @@ import 'package:tourcompass/Settings/change_password.dart';
 import 'package:tourcompass/Settings/guide_profile.dart';
 import 'package:tourcompass/Settings/profile_info.dart';
 import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
+import 'package:http/http.dart' as http;
 
 class SettingGestureRow extends StatelessWidget {
   final String label;
@@ -54,6 +56,32 @@ class Setting extends StatefulWidget {
 
 class _SettingState extends State<Setting> {
   bool _isSwitched = false;
+
+  Future<void> deleteAccount() async {
+    try {
+      final response = await http.delete(
+        Uri.parse('${url}/deleteTraveller/${userToken['id']}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${token}',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Account deleted successfully');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      } else {
+        print('Failed to delete account: ${response.body}');
+      }
+    } catch (error) {
+      print('Error deleting account: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,12 +161,12 @@ class _SettingState extends State<Setting> {
                   SettingGestureRow(
                     label: 'Change Password',
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => ChangePassword(),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangePassword(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -203,29 +231,61 @@ class _SettingState extends State<Setting> {
                 color: const Color.fromRGBO(228, 225, 222, 1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Delete Account',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text(
+                          "Delete Account",
+                          style: TextStyle(color: Colors.red),
                         ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16,
-                        color: Colors.black,
-                      ),
-                    ],
-                  ),
-                ],
+                        content: const Text(
+                          "Do you want to Delete Account?",
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text("Yes"),
+                            onPressed: () {
+                              deleteAccount();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text("No"),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Delete Account',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 50),

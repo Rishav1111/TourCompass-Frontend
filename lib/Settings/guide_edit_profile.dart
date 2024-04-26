@@ -120,6 +120,12 @@ class _GuideEditProfileState extends State<GuideEditProfile> {
       if (response.statusCode == 200) {
         // Successful update
         print('User updated successfully');
+        Navigator.pop(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GuideProfile(),
+          ),
+        );
       } else {
         // Handle API error
         print('Failed to update user. Status code: ${response.statusCode}');

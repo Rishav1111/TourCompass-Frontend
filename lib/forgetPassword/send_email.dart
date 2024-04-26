@@ -70,7 +70,7 @@ class _SendEmailState extends State<SendEmail> {
     }
 
     setState(() {
-      isLoading = true; // Set loading state to true when sending email
+      isLoading = true;
     });
 
     _showLoadingDialog(context); // Show loading dialog
@@ -91,8 +91,7 @@ class _SendEmailState extends State<SendEmail> {
         print("Email sent");
       } else {
         setState(() {
-          isLoading =
-              false; // Set loading state to false if email sending failed
+          isLoading = false;
           emailController.text = '';
         });
         ScaffoldMessenger.of(context).showSnackBar(

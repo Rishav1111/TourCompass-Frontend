@@ -5,7 +5,7 @@ import 'package:tourcompass/Utils/button.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Utils/scaffold.dart';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/home.dart';
+import 'package:tourcompass/Utils/navbar.dart';
 import 'package:tourcompass/order.dart';
 
 class Guide_Details extends StatefulWidget {
@@ -46,11 +46,11 @@ class _Guide_DetailsState extends State<Guide_Details> {
     guidePrice = widget.guidePrice;
   }
 
-  void increasePrice() {
-    setState(() {
-      guidePrice += 10;
-    });
-  }
+  // void increasePrice() {
+  //   setState(() {
+  //     guidePrice += 10;
+  //   });
+  // }
 
   void decreasePrice() {
     setState(() {
@@ -82,10 +82,10 @@ class _Guide_DetailsState extends State<Guide_Details> {
         print('Booking requested successfully');
 
         showCustomSnackBar(context, "Your booking request has been sent!");
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomeContent()),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationMenu()),
+        );
       } else {
         print('Failed to create booking. Status code: ${response.statusCode}');
         print(widget.searchedPlace);
@@ -134,7 +134,7 @@ class _Guide_DetailsState extends State<Guide_Details> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              height: 600,
+              height: 400,
               width: 400,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
@@ -200,12 +200,13 @@ class _Guide_DetailsState extends State<Guide_Details> {
                     const SizedBox(height: 10),
                     Container(
                       height: 48,
+                      width: 125,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         color: Colors.orange[700],
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           IconButton(
                             onPressed: decreasePrice,
@@ -219,13 +220,6 @@ class _Guide_DetailsState extends State<Guide_Details> {
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: increasePrice,
-                            icon: const Icon(
-                              Icons.add,
                               color: Colors.white,
                             ),
                           ),

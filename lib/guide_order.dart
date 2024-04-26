@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tourcompass/Utils/button.dart';
+import 'package:tourcompass/Utils/scaffold.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GuideOrderPage extends StatefulWidget {
   const GuideOrderPage({super.key});
@@ -92,17 +94,16 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
                     itemCount: travelerList.length,
                     itemBuilder: (context, index) {
                       final status = travelerList[index]['status'];
-                      final isConfirmed = status == 'Confirmed';
                       return BookingCard(
                         firstname: travelerList[index]['firstname'],
                         lastname: travelerList[index]['lastname'],
+                        phoneNumber: travelerList[index]['phoneNumber'],
                         negotiatedPrice: travelerList[index]['negotiatedPrice'],
                         destination: travelerList[index]['destination'],
                         status: status,
                         travelDate: travelerList[index]['travelDate'],
                         travelerList: travelerList,
                         index: index,
-                        isConfirmed: isConfirmed,
                       );
                     },
                   ),
@@ -114,25 +115,25 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
 class BookingCard extends StatefulWidget {
   final String? firstname;
   final String? lastname;
+  final String? phoneNumber;
   final int? negotiatedPrice;
   final String? destination;
-  final String? status;
+  final String status;
   final String? travelDate;
   final List<Map<String, dynamic>> travelerList;
   final int index;
-  final bool isConfirmed;
 
   const BookingCard({
     Key? key,
     required this.firstname,
     required this.lastname,
+    required this.phoneNumber,
     required this.negotiatedPrice,
     required this.destination,
     required this.status,
     required this.travelDate,
     required this.travelerList,
     required this.index,
-    required this.isConfirmed,
   }) : super(key: key);
 
   @override
@@ -140,7 +141,6 @@ class BookingCard extends StatefulWidget {
 }
 
 class _BookingCardState extends State<BookingCard> {
-  bool _isConfirmed = false;
   Future<void> confirmBooking(String bookingId) async {
     try {
       final response = await http.put(
@@ -152,14 +152,55 @@ class _BookingCardState extends State<BookingCard> {
       );
       if (response.statusCode == 200) {
         print('Booking confirmed successfully');
-        setState(() {
-          _isConfirmed = true;
-        });
+        showCustomSnackBar(context, 'Booking Confirmed',
+            backgroundColor: Colors.green);
       } else {
         print('Failed to confirm booking: ${response.body}');
       }
     } catch (error) {
       print('Error confirming booking: $error');
+    }
+  }
+
+  Future<void> cancelBooking(String bookingId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('${url}bookings/$bookingId/updateStatus'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'action': 'cancel'}),
+      );
+      if (response.statusCode == 200) {
+        print('Booking cancelled successfully');
+        showCustomSnackBar(context, 'Booking Cancelled',
+            backgroundColor: Colors.green);
+      } else {
+        print('Failed to cancelling booking: ${response.body}');
+      }
+    } catch (error) {
+      print('Error cancelling booking: $error');
+    }
+  }
+
+  Future<void> completeBooking(String bookingId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('${url}bookings/$bookingId/updateStatus'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'action': 'complete'}),
+      );
+      if (response.statusCode == 200) {
+        print('Booking completed successfully');
+        showCustomSnackBar(context, 'Booking Completed',
+            backgroundColor: Colors.green);
+      } else {
+        print('Failed to complete booking: ${response.body}');
+      }
+    } catch (error) {
+      print('Error complete booking: $error');
     }
   }
 
@@ -212,10 +253,34 @@ class _BookingCardState extends State<BookingCard> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              widget.isConfirmed
-                  ? ElevatedButton(
-                      onPressed: () {},
+              if (widget.status == "Cancelled")
+                Text(
+                  widget.status,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              else if (widget.status == "Completed")
+                Text(
+                  widget.status,
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              else if (widget.status == "Confirmed" &&
+                  widget.status != "Cancelled")
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        completeBooking(
+                            widget.travelerList[widget.index]['bookingId']);
+                      },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.black,
                         backgroundColor: Colors.green,
@@ -230,45 +295,78 @@ class _BookingCardState extends State<BookingCard> {
                         "Complete",
                         style: TextStyle(
                           fontSize: 16,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
-                  : Row(
-                      children: [
-                        CustomButton(
-                          text: "Confirm",
-                          onPressed: () {
-                            setState(() {
-                              _isConfirmed = true;
-                            });
-                            confirmBooking(
-                                widget.travelerList[widget.index]['bookingId']);
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            minimumSize: const Size(150, 10),
-                          ),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
+                    SizedBox(
+                      width: 50,
+                    ),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: GestureDetector(
+                        onTap: () async {
+                          Uri phoneUri =
+                              Uri.parse('tel:+977${widget.phoneNumber}');
+
+                          if (await launchUrl(phoneUri)) {
+                            print('Phone dialer opened successfully');
+                          } else {
+                            print('Failed to open phone dialer');
+                          }
+                        },
+                        child: const Icon(
+                          Icons.phone,
+                          color: Colors.white,
+                          size: 24.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else if (widget.status != "Cancelled" &&
+                  widget.status != "Completed")
+                Row(
+                  children: [
+                    CustomButton(
+                      text: "Confirm",
+                      onPressed: () {
+                        confirmBooking(
+                            widget.travelerList[widget.index]['bookingId']);
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        cancelBooking(
+                            widget.travelerList[widget.index]['bookingId']);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        minimumSize: const Size(150, 10),
+                      ),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
