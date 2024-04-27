@@ -4,6 +4,7 @@ import 'package:tourcompass/Utils/scaffold.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
+import 'package:tourcompass/rating_feedback.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrderPage extends StatefulWidget {
@@ -90,6 +91,7 @@ class _OrderPageState extends State<OrderPage> {
                     itemCount: guideList.length,
                     itemBuilder: (context, index) {
                       return BookingCard(
+                        guideId: guideList[index]["guideId"],
                         firstname: guideList[index]['firstname'],
                         lastname: guideList[index]['lastname'],
                         phoneNumber: guideList[index]['phoneNumber'],
@@ -108,6 +110,7 @@ class _OrderPageState extends State<OrderPage> {
 }
 
 class BookingCard extends StatefulWidget {
+  final String guideId;
   final String firstname;
   final String lastname;
   final String? phoneNumber;
@@ -119,6 +122,7 @@ class BookingCard extends StatefulWidget {
   final String bookingId;
 
   const BookingCard({
+    required this.guideId,
     required this.firstname,
     required this.lastname,
     this.expertPlace,
@@ -170,7 +174,7 @@ class _BookingCardState extends State<BookingCard> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(4.0),
         child: ListTile(
           leading: Container(
             width: 60,
@@ -246,7 +250,15 @@ class _BookingCardState extends State<BookingCard> {
                             width: 20,
                           ),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return RatingFeedbackDialog(
+                                      guideid: widget.guideId,
+                                    );
+                                  });
+                            },
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.black,
                               backgroundColor: Colors.blue,
