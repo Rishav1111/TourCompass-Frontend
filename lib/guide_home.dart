@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
+import 'package:tourcompass/notifications.dart';
 
 class GuideHomeContent extends StatefulWidget {
   const GuideHomeContent({
@@ -102,6 +103,22 @@ class _GuideHomeContentState extends State<GuideHomeContent> {
             bottomRight: Radius.circular(20.0),
           ),
         ),
+        // actions: [
+        //   IconButton(
+        //     padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+        //     iconSize: 30,
+        //     icon: const Icon(
+        //       Icons.notifications,
+        //       color: Colors.white,
+        //     ),
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => NotificationsPage()),
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body: Column(
         children: [
