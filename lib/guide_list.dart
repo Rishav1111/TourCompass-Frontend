@@ -184,28 +184,14 @@ class _GuideListPageState extends State<GuideListPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "$firstName $lastName",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow[700],
-                            ),
-                            const Text(
-                              "0",
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                        Text(
+                          "$firstName $lastName",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
                         ),
                         const SizedBox(
                           height: 5,
@@ -214,6 +200,7 @@ class _GuideListPageState extends State<GuideListPage> {
                           expertPlace.toString(),
                           style: const TextStyle(
                             color: Color.fromARGB(255, 94, 93, 93),
+                            fontSize: 14,
                           ),
                         ),
                         const SizedBox(

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:khalti_flutter/khalti_flutter.dart';
 import 'package:tourcompass/Login%20and%20Signup/login.dart';
+import 'package:tourcompass/order.dart';
 
 late Map<String, dynamic> userToken;
 late String token;
@@ -9,12 +11,21 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SplashScreen(),
+    return KhaltiScope(
+      publicKey:
+          "test_public_key_a7fd8a500862483c988ec3e4dae7146a",
+      enabledDebugging: true, // Set to false for production
+      builder: (context, navKey) {
+        return MaterialApp(
+          navigatorKey: navKey,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: SplashScreen(),
+          localizationsDelegates: const [KhaltiLocalizations.delegate],
+        );
+      },
     );
   }
 }

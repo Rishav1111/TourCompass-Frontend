@@ -1,5 +1,5 @@
-const url = 'http://192.168.1.7:5000/api/';
-// const url = 'http://10.22.11.3:5000/api/';
+// const url = 'http://192.168.1.10:5000/api/';
+const url = 'http://10.22.18.128:5000/api/';
 const adminUrl = 'http://localhost:5000/api/';
 
 const signupTraveller = '${url}signupTraveller';
@@ -10,5 +10,4 @@ const verifypin = '${url}verifyPin';
 const travellerverifyPin = '${url}travellerverifyPin';
 const guideverifyPin = '${url}guideverifyPin';
 const resetpassword = '${url}resetpassword';
-const adminLogin = '${adminUrl}adminlogin';
 const autocomplete = '${url}autocomplte';
