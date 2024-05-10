@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:khalti_flutter/khalti_flutter.dart';
 import 'package:tourcompass/Utils/scaffold.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
@@ -235,48 +236,125 @@ class _BookingCardState extends State<BookingCard> {
                         ),
                       )
                     else if (widget.status == "Completed")
-                      Row(
+                      Column(
                         children: [
-                          Text(
-                            widget.status,
-                            style: const TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
+                          Row(
+                            children: [
+                              Text(
+                                widget.status,
+                                style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return RatingFeedbackDialog(
+                                          guideid: widget.guideId,
+                                        );
+                                      });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.black,
+                                  backgroundColor: Colors.blue,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  minimumSize: const Size(80, 10),
+                                ),
+                                child: const Text(
+                                  "Rate",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           ElevatedButton(
                             onPressed: () {
                               showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return RatingFeedbackDialog(
-                                      guideid: widget.guideId,
-                                    );
-                                  });
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Choose Payment Method'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            // handleCashInHand();
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16,
+                                                horizontal:
+                                                    32), // Adjust padding
+                                            minimumSize: Size(200,
+                                                40), // Set minimum width and height
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                  8), // Optional: Customize border radius
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Cash in Hand',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(
+                                                context); // Close the dialog
+                                            paywithKhalti(context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16,
+                                                horizontal:
+                                                    32), // Adjust padding
+                                            minimumSize: Size(200,
+                                                40), // Set minimum width and height
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                  8), // Optional: Customize border radius
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Pay with Khalti',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(
+                                              context); // Close the dialog
+                                        },
+                                        child: Text('Cancel'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.black,
-                              backgroundColor: Colors.blue,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              minimumSize: const Size(80, 10),
-                            ),
-                            child: const Text(
-                              "Rate",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: Text('Choose Payment Method'),
                           ),
                         ],
                       )
@@ -288,7 +366,7 @@ class _BookingCardState extends State<BookingCard> {
                             widget.status,
                             style: const TextStyle(
                               fontStyle: FontStyle.italic,
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
                             ),
@@ -364,5 +442,45 @@ class _BookingCardState extends State<BookingCard> {
         ),
       ),
     );
+  }
+
+  void paywithKhalti(BuildContext context) {
+    KhaltiScope.of(context).pay(
+      config: PaymentConfig(
+          amount: 1000,
+          productIdentity: widget.guideId,
+          productName: widget.firstname + widget.lastname),
+      preferences: [
+        PaymentPreference.khalti,
+      ],
+      onSuccess: onSuccess,
+      onFailure: onFailure,
+      onCancel: onCancel,
+    );
+  }
+
+  void onSuccess(PaymentSuccessModel success) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Transaction Successful"),
+            actions: [
+              SimpleDialogOption(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+            ],
+          );
+        });
+  }
+
+  void onFailure(PaymentFailureModel failure) {
+    debugPrint(failure.toString());
+  }
+
+  void onCancel() {
+    debugPrint("Cancelled");
   }
 }
