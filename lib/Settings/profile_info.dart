@@ -22,15 +22,14 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    String myToken = token;
-    fetchData(myToken);
+    fetchData();
   }
 
-  Future<void> fetchData(String myToken) async {
+  Future<void> fetchData() async {
     try {
       final response = await http.get(
         Uri.parse('${url}getTraveller/${userToken['id']}'),
-        headers: {'Authorization': 'Bearer $myToken'},
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -135,7 +134,9 @@ class _ProfileState extends State<Profile> {
                         phoneNumber: phoneNumber,
                       ),
                     ),
-                  );
+                  ).then((_) {
+                    fetchData();
+                  });
                 }),
           ],
         ),

@@ -281,19 +281,31 @@ class _SignupPageState extends State<Signup_guide> {
                                   ),
                                   Row(
                                     children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            35, 0, 10, 0),
+                                        child: IconButton(
+                                          icon: const Icon(Icons.camera_alt),
+                                          onPressed: () {
+                                            _uploadPhoto("license");
+                                          },
+                                          iconSize:
+                                              24.0, // You can adjust the size if needed
+                                          color: Colors
+                                              .black, // You can adjust the color if needed
+                                        ),
+                                      ),
                                       Expanded(
                                         child: Padding(
                                           padding: const EdgeInsets.fromLTRB(
-                                              35, 0, 10, 0),
+                                              0, 0, 35, 0),
                                           child: SizedBox(
                                             height: 53,
-                                            child: ElevatedButton.icon(
-                                              icon:
-                                                  const Icon(Icons.camera_alt),
+                                            child: ElevatedButton(
                                               onPressed: () {
                                                 _uploadPhoto("license");
                                               },
-                                              label: Text(
+                                              child: Text(
                                                 licensePhotoUrl == null
                                                     ? "Upload License Photo"
                                                     : path.basename(
@@ -317,33 +329,40 @@ class _SignupPageState extends State<Signup_guide> {
                                     height: 10,
                                   ),
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              35, 0, 10, 0),
-                                          child: SizedBox(
-                                            height: 53,
-                                            child: ElevatedButton.icon(
-                                              onPressed: () {
-                                                _uploadPhoto("user");
-                                              },
-                                              icon:
-                                                  const Icon(Icons.camera_alt),
-                                              label: Text(
-                                                userPhotoUrl == null
-                                                    ? "Upload Your Photo"
-                                                    : path.basename(
-                                                        userPhotoUrl!),
-                                              ),
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all<
-                                                        Color>(
-                                                  Color.fromARGB(255, 215, 210,
-                                                      210), // Change this to the desired color
-                                                ),
-                                              ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 35, 0),
+                                        child: IconButton(
+                                          icon: const Icon(Icons.camera_alt),
+                                          onPressed: () {
+                                            _uploadPhoto("license");
+                                          },
+                                          iconSize: 24.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      // Wrap the ElevatedButton in a Container and set its width directly
+                                      Container(
+                                        width:
+                                            200, // Adjust the width as needed
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            _uploadPhoto("license");
+                                          },
+                                          child: Text(
+                                            licensePhotoUrl == null
+                                                ? "Upload License Photo"
+                                                : path
+                                                    .basename(licensePhotoUrl!),
+                                          ),
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(
+                                              Color.fromARGB(
+                                                  255, 215, 210, 210),
                                             ),
                                           ),
                                         ),

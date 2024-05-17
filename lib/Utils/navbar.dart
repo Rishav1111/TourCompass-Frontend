@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tourcompass/Settings/settings.dart';
-import 'package:tourcompass/home.dart';
-import 'package:tourcompass/order.dart';
+import 'package:tourcompass/Traveler_View/history.dart';
+import 'package:tourcompass/Traveler_View/home.dart';
+import 'package:tourcompass/Traveler_View/order.dart';
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({
@@ -22,6 +23,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     screens = [
       HomeContent(),
       OrderPage(),
+      HistoryPage(),
       Setting(),
     ];
   }
@@ -44,6 +46,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: ('Home')),
             NavigationDestination(icon: Icon(Icons.list), label: 'Orders'),
+            NavigationDestination(icon: Icon(Icons.history), label: "History"),
             NavigationDestination(
                 icon: Icon(Icons.settings), label: ('Settings')),
           ],

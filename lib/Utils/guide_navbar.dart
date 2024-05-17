@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tourcompass/Guide_View/guide_history.dart';
 import 'package:tourcompass/Settings/settings.dart';
-import 'package:tourcompass/guide_home.dart';
-import 'package:tourcompass/guide_order.dart';
-import 'package:tourcompass/guide_rating_list.dart';
+import 'package:tourcompass/Guide_View/guide_home.dart';
+import 'package:tourcompass/Guide_View/guide_order.dart';
+import 'package:tourcompass/Guide_View/guide_rating_list.dart';
 import 'package:tourcompass/main.dart';
 
 class GuideNavigationMenu extends StatefulWidget {
@@ -23,6 +24,7 @@ class _NavigationMenuState extends State<GuideNavigationMenu> {
     super.initState();
     screens = [
       GuideHomeContent(),
+      GuideHistoryPage(),
       GuideOrderPage(),
       Guide_Rating_Page(),
       Setting(),
@@ -46,6 +48,8 @@ class _NavigationMenuState extends State<GuideNavigationMenu> {
           }),
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: ('Home')),
+            NavigationDestination(
+                icon: Icon(Icons.history), label: ('History')),
             NavigationDestination(icon: Icon(Icons.list), label: 'Orders'),
             NavigationDestination(
                 icon: Icon(Icons.rate_review), label: 'Ratings'),

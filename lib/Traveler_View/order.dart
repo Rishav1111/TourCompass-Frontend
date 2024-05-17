@@ -5,7 +5,7 @@ import 'package:tourcompass/Utils/scaffold.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
-import 'package:tourcompass/rating_feedback.dart';
+import 'package:tourcompass/Traveler_View/rating_feedback.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrderPage extends StatefulWidget {
@@ -37,7 +37,6 @@ class _OrderPageState extends State<OrderPage> {
 
       if (response.statusCode == 200) {
         guideList = List<Map<String, dynamic>>.from(json.decode(response.body));
-        print(guideList);
       } else {
         throw Exception('Failed to load guide data');
       }
@@ -52,6 +51,12 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Filter the guideList to only include bookings with status "Requested"
+    final requestedBookings = guideList.where((booking) {
+      return booking['status'] == 'Requested' ||
+          booking['status'] == 'Confirmed';
+    }).toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -78,7 +83,7 @@ class _OrderPageState extends State<OrderPage> {
         padding: const EdgeInsets.all(8.0),
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : guideList.isEmpty
+            : requestedBookings.isEmpty
                 ? const Center(
                     child: Text(
                       'No Orders',
@@ -89,19 +94,20 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: guideList.length,
+                    itemCount: requestedBookings.length,
                     itemBuilder: (context, index) {
                       return BookingCard(
-                        guideId: guideList[index]["guideId"],
-                        firstname: guideList[index]['firstname'],
-                        lastname: guideList[index]['lastname'],
-                        phoneNumber: guideList[index]['phoneNumber'],
-                        expertPlace: guideList[index]['expertPlace'],
-                        guidePhoto: guideList[index]['guidePhoto'],
-                        status: guideList[index]['status'],
-                        negotiatedPrice: guideList[index]['negotiatedPrice'],
-                        travelDate: guideList[index]['travelDate'],
-                        bookingId: guideList[index]['bookingId'],
+                        guideId: requestedBookings[index]["guideId"],
+                        firstname: requestedBookings[index]['firstname'],
+                        lastname: requestedBookings[index]['lastname'],
+                        phoneNumber: requestedBookings[index]['phoneNumber'],
+                        expertPlace: requestedBookings[index]['expertPlace'],
+                        guidePhoto: requestedBookings[index]['guidePhoto'],
+                        status: requestedBookings[index]['status'],
+                        negotiatedPrice: requestedBookings[index]
+                            ['negotiatedPrice'],
+                        travelDate: requestedBookings[index]['travelDate'],
+                        bookingId: requestedBookings[index]['bookingId'],
                       );
                     },
                   ),
@@ -205,15 +211,32 @@ class _BookingCardState extends State<BookingCard> {
                   children: [
                     Text(widget.expertPlace ?? 'Unknown'),
                     const SizedBox(height: 4),
-                    Text(
-                      widget.travelDate != null
-                          ? '${DateTime.parse(widget.travelDate!).month}/${DateTime.parse(widget.travelDate!).day}/${DateTime.parse(widget.travelDate!).year}'
-                          : "Unknown",
-                      style: const TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 14,
-                        color: Colors.black,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.travelDate != null
+                              ? '${DateTime.parse(widget.travelDate!).month}/${DateTime.parse(widget.travelDate!).day}/${DateTime.parse(widget.travelDate!).year}'
+                              : "Unknown",
+                          style: const TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Text(
+                          widget.negotiatedPrice != null
+                              ? "Rs. ${widget.negotiatedPrice.toString()}"
+                              : "Unknown",
+                          style: const TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 229, 40, 11),
+                          ),
+                        ),
+                      ],
                     ),
                     if (widget.status == "Requested")
                       Text(
@@ -235,129 +258,6 @@ class _BookingCardState extends State<BookingCard> {
                           color: Colors.red,
                         ),
                       )
-                    else if (widget.status == "Completed")
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                widget.status,
-                                style: const TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return RatingFeedbackDialog(
-                                          guideid: widget.guideId,
-                                        );
-                                      });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.black,
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 15),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  minimumSize: const Size(80, 10),
-                                ),
-                                child: const Text(
-                                  "Rate",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Choose Payment Method'),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            // handleCashInHand();
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 16,
-                                                horizontal:
-                                                    32), // Adjust padding
-                                            minimumSize: Size(200,
-                                                40), // Set minimum width and height
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                  8), // Optional: Customize border radius
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Cash in Hand',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        ),
-                                        SizedBox(height: 6),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(
-                                                context); // Close the dialog
-                                            paywithKhalti(context);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 16,
-                                                horizontal:
-                                                    32), // Adjust padding
-                                            minimumSize: Size(200,
-                                                40), // Set minimum width and height
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                  8), // Optional: Customize border radius
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Pay with Khalti',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(
-                                              context); // Close the dialog
-                                        },
-                                        child: Text('Cancel'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Text('Choose Payment Method'),
-                          ),
-                        ],
-                      )
                     else if (widget.status == "Confirmed")
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -371,7 +271,7 @@ class _BookingCardState extends State<BookingCard> {
                               color: Colors.green,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 50,
                           ),
                           Container(
@@ -429,14 +329,6 @@ class _BookingCardState extends State<BookingCard> {
                   ],
                 ),
               ),
-              Text(
-                "Rs. " + widget.negotiatedPrice.toString(),
-                style: const TextStyle(
-                  fontStyle: FontStyle.italic,
-                  fontSize: 20,
-                  color: Color.fromARGB(255, 229, 40, 11),
-                ),
-              ),
             ],
           ),
         ),
@@ -459,21 +351,54 @@ class _BookingCardState extends State<BookingCard> {
     );
   }
 
-  void onSuccess(PaymentSuccessModel success) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Transaction Successful"),
-            actions: [
-              SimpleDialogOption(
-                  child: const Text("OK"),
+  void onSuccess(PaymentSuccessModel success) async {
+    // Extract payment data from the PaymentSuccessModel object
+    String token = success.token;
+    int amount = success.amount;
+    String productIdentity = success.productIdentity;
+    String productName = success.productName;
+
+    Map<String, dynamic> paymentData = {
+      'travelerId': userToken["id"],
+      'token': token,
+      'guideId': productIdentity,
+      'amount': amount,
+      'guideName': productName,
+    };
+
+    String serverUrl = '${url}/payment/confirm';
+
+    try {
+      final response = await http.post(
+        Uri.parse(serverUrl),
+        body: jsonEncode(paymentData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Payment Successful"),
+              content: Text("Payment Successfull."),
+              actions: [
+                TextButton(
+                  child: Text("OK"),
                   onPressed: () {
                     Navigator.pop(context);
-                  }),
-            ],
-          );
-        });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {}
+    } catch (error) {
+      debugPrint("Error sending payment data: $error");
+    }
   }
 
   void onFailure(PaymentFailureModel failure) {

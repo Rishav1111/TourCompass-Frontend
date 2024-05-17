@@ -31,6 +31,7 @@ class _Guide_Rating_PageState extends State<Guide_Rating_Page> {
         final data = jsonDecode(response.body);
         setState(() {
           reviews = List<Map<String, dynamic>>.from(data['travelerDetails']);
+          print(reviews);
         });
       } else {
         print('Failed to fetch reviews. Status code: ${response.statusCode}');

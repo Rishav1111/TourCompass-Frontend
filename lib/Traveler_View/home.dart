@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tourcompass/choose_date.dart';
+import 'package:tourcompass/Traveler_View/choose_date.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
 import 'package:tourcompass/notifications.dart';

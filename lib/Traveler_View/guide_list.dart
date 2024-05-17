@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tourcompass/config.dart';
 import 'package:http/http.dart' as http;
-import 'package:tourcompass/guide_details.dart';
+import 'package:tourcompass/Traveler_View/guide_details.dart';
 
 class GuideListPage extends StatefulWidget {
   final String? token;

@@ -6,11 +6,11 @@ import 'package:tourcompass/Utils/guide_navbar.dart';
 import 'package:tourcompass/Utils/navbar.dart';
 import 'package:tourcompass/config.dart';
 import 'package:tourcompass/Login%20and%20Signup/signup.dart';
-import 'package:tourcompass/guide_home.dart';
+import 'package:tourcompass/Guide_View/guide_home.dart';
 import 'package:tourcompass/main.dart';
 import 'package:tourcompass/forgetPassword/send_email.dart';
 import 'package:http/http.dart' as http;
-import 'package:tourcompass/home.dart';
+import 'package:tourcompass/Traveler_View/home.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -167,12 +167,10 @@ class _LoginPageState extends State<LoginPage> {
         token = myToken;
 
         String userType = decodedToken['userType'];
-        String userid = decodedToken['id'];
-        String firstname = decodedToken['firstname'];
+
         if (token != null) {
           // Save token and userType in SharedPreferences or another storage mechanism
           await prefs.setString('token', myToken);
-          // await prefs.setString('userType', userType);
 
           print("hello");
           // Navigate based on userType

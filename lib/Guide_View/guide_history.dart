@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tourcompass/Traveler_View/history.dart';
 import 'package:tourcompass/Utils/button.dart';
 import 'package:tourcompass/Utils/scaffold.dart';
 import 'dart:convert';
@@ -7,14 +8,14 @@ import 'package:tourcompass/config.dart';
 import 'package:tourcompass/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GuideOrderPage extends StatefulWidget {
-  const GuideOrderPage({super.key});
+class GuideHistoryPage extends StatefulWidget {
+  const GuideHistoryPage({super.key});
 
   @override
-  State<GuideOrderPage> createState() => _GuideOrderPageState();
+  State<GuideHistoryPage> createState() => _GuideHistoryPageState();
 }
 
-class _GuideOrderPageState extends State<GuideOrderPage> {
+class _GuideHistoryPageState extends State<GuideHistoryPage> {
   List<Map<String, dynamic>> travelerList = [];
   bool isLoading = true;
 
@@ -54,6 +55,11 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    final completedAndCancelledBookings = travelerList.where((booking) {
+      return booking['status'] == 'Completed' ||
+          booking['status'] == 'Cancelled';
+    }).toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -80,7 +86,7 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
         padding: const EdgeInsets.all(8.0),
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : travelerList.isEmpty
+            : completedAndCancelledBookings.isEmpty
                 ? const Center(
                     child: Text(
                       'No Orders',
@@ -91,18 +97,23 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: travelerList.length,
+                    itemCount: completedAndCancelledBookings.length,
                     itemBuilder: (context, index) {
-                      final status = travelerList[index]['status'];
-                      return BookingCard(
-                        firstname: travelerList[index]['firstname'],
-                        lastname: travelerList[index]['lastname'],
-                        phoneNumber: travelerList[index]['phoneNumber'],
-                        negotiatedPrice: travelerList[index]['negotiatedPrice'],
-                        destination: travelerList[index]['destination'],
-                        status: status,
-                        travelDate: travelerList[index]['travelDate'],
-                        travelerList: travelerList,
+                      return HistoryCard(
+                        firstname: completedAndCancelledBookings[index]
+                            ['firstname'],
+                        lastname: completedAndCancelledBookings[index]
+                            ['lastname'],
+                        phoneNumber: completedAndCancelledBookings[index]
+                            ['phoneNumber'],
+                        negotiatedPrice: completedAndCancelledBookings[index]
+                            ['negotiatedPrice'],
+                        destination: completedAndCancelledBookings[index]
+                            ['destination'],
+                        status: completedAndCancelledBookings[index]['status'],
+                        travelDate: completedAndCancelledBookings[index]
+                            ['travelDate'],
+                        travelerList: completedAndCancelledBookings,
                         index: index,
                       );
                     },
@@ -112,7 +123,7 @@ class _GuideOrderPageState extends State<GuideOrderPage> {
   }
 }
 
-class BookingCard extends StatefulWidget {
+class HistoryCard extends StatefulWidget {
   final String? firstname;
   final String? lastname;
   final String? phoneNumber;
@@ -123,7 +134,7 @@ class BookingCard extends StatefulWidget {
   final List<Map<String, dynamic>> travelerList;
   final int index;
 
-  const BookingCard({
+  const HistoryCard({
     Key? key,
     required this.firstname,
     required this.lastname,
@@ -137,73 +148,10 @@ class BookingCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<BookingCard> createState() => _BookingCardState();
+  State<HistoryCard> createState() => _HistoryCardState();
 }
 
-class _BookingCardState extends State<BookingCard> {
-  Future<void> confirmBooking(String bookingId) async {
-    try {
-      final response = await http.put(
-        Uri.parse('${url}bookings/$bookingId/updateStatus'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({'action': 'confirm'}),
-      );
-      if (response.statusCode == 200) {
-        print('Booking confirmed successfully');
-        showCustomSnackBar(context, 'Booking Confirmed',
-            backgroundColor: Colors.green);
-      } else {
-        print('Failed to confirm booking: ${response.body}');
-      }
-    } catch (error) {
-      print('Error confirming booking: $error');
-    }
-  }
-
-  Future<void> cancelBooking(String bookingId) async {
-    try {
-      final response = await http.put(
-        Uri.parse('${url}bookings/$bookingId/updateStatus'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({'action': 'cancel'}),
-      );
-      if (response.statusCode == 200) {
-        print('Booking cancelled successfully');
-        showCustomSnackBar(context, 'Booking Cancelled',
-            backgroundColor: Colors.green);
-      } else {
-        print('Failed to cancelling booking: ${response.body}');
-      }
-    } catch (error) {
-      print('Error cancelling booking: $error');
-    }
-  }
-
-  Future<void> completeBooking(String bookingId) async {
-    try {
-      final response = await http.put(
-        Uri.parse('${url}bookings/$bookingId/updateStatus'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({'action': 'complete'}),
-      );
-      if (response.statusCode == 200) {
-        print('Booking completed successfully');
-        showCustomSnackBar(context, 'Booking Completed',
-            backgroundColor: Colors.green);
-      } else {
-        print('Failed to complete booking: ${response.body}');
-      }
-    } catch (error) {
-      print('Error complete booking: $error');
-    }
-  }
-
+class _HistoryCardState extends State<HistoryCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -276,30 +224,6 @@ class _BookingCardState extends State<BookingCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        completeBooking(
-                            widget.travelerList[widget.index]['bookingId']);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        minimumSize: const Size(150, 10),
-                      ),
-                      child: const Text(
-                        "Complete",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                     SizedBox(
                       width: 50,
                     ),
@@ -330,43 +254,6 @@ class _BookingCardState extends State<BookingCard> {
                     ),
                   ],
                 )
-              else if (widget.status != "Cancelled" &&
-                  widget.status != "Completed")
-                Row(
-                  children: [
-                    CustomButton(
-                      text: "Confirm",
-                      onPressed: () {
-                        confirmBooking(
-                            widget.travelerList[widget.index]['bookingId']);
-                      },
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        cancelBooking(
-                            widget.travelerList[widget.index]['bookingId']);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        minimumSize: const Size(150, 10),
-                      ),
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
             ],
           ),
         ),

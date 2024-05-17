@@ -7,7 +7,7 @@ import 'package:tourcompass/Utils/Scaffold.dart';
 import 'package:tourcompass/Utils/button.dart';
 import 'dart:convert';
 import 'package:tourcompass/config.dart';
-import 'package:tourcompass/password_textfield.dart' as CustomTextField;
+import 'package:tourcompass/Utils/password_textfield.dart' as CustomTextField;
 
 class NewPassword extends StatefulWidget {
   final String email;
