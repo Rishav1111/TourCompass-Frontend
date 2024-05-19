@@ -30,7 +30,7 @@ class _Guide_Rating_PageState extends State<Guide_Rating_Page> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          reviews = List<Map<String, dynamic>>.from(data['travelerDetails']);
+          reviews = List<Map<String, dynamic>>.from(data['reviews']);
           print(reviews);
         });
       } else {

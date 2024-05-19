@@ -88,7 +88,7 @@ class _Guide_DetailsState extends State<Guide_Details> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          reviews = List<Map<String, dynamic>>.from(data['travelerDetails']);
+          reviews = List<Map<String, dynamic>>.from(data['reviews']);
         });
       } else {
         print('Failed to fetch reviews. Status code: ${response.statusCode}');

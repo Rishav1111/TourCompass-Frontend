@@ -56,7 +56,7 @@ class _VerifyTravellerEmailOtp extends State<VerifyTravellerEmailOtp> {
       );
 
       if (response.statusCode == 200) {
-        showCustomSnackBar(context, 'Email verified successfully.',
+        showCustomSnackBar(context, 'Email verified and Signup Successfully.',
             backgroundColor: Colors.green);
 
         // Navigate to the NewPassword page after showing the snackbar

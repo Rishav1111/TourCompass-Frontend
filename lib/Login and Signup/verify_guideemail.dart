@@ -71,7 +71,7 @@ class _VerifyGuideEmailOtp extends State<VerifyGuideEmailOtp> {
 
       if (response.statusCode == 200) {
         print("PIN verified");
-        showCustomSnackBar(context, 'Email verified successfully.',
+        showCustomSnackBar(context, 'Email verified and Signup successfully.',
             backgroundColor: Colors.green);
 
         Navigator.push(

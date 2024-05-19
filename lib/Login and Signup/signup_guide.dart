@@ -281,43 +281,30 @@ class _SignupPageState extends State<Signup_guide> {
                                   ),
                                   Row(
                                     children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            35, 0, 10, 0),
-                                        child: IconButton(
-                                          icon: const Icon(Icons.camera_alt),
-                                          onPressed: () {
-                                            _uploadPhoto("license");
-                                          },
-                                          iconSize:
-                                              24.0, // You can adjust the size if needed
-                                          color: Colors
-                                              .black, // You can adjust the color if needed
-                                        ),
+                                      Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.black,
                                       ),
+                                      const SizedBox(width: 10),
                                       Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 0, 35, 0),
-                                          child: SizedBox(
-                                            height: 53,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                _uploadPhoto("license");
-                                              },
-                                              child: Text(
-                                                licensePhotoUrl == null
-                                                    ? "Upload License Photo"
-                                                    : path.basename(
-                                                        licensePhotoUrl!),
-                                              ),
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all<
-                                                        Color>(
-                                                  Color.fromARGB(255, 215, 210,
-                                                      210), // Change this to the desired color
-                                                ),
+                                        child: SizedBox(
+                                          height: 50,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              _uploadPhoto("license");
+                                            },
+                                            child: Text(
+                                              licensePhotoUrl == null
+                                                  ? "Upload License Photo"
+                                                  : path.basename(
+                                                      licensePhotoUrl!),
+                                            ),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(
+                                                Color.fromARGB(
+                                                    255, 215, 210, 210),
                                               ),
                                             ),
                                           ),
@@ -329,40 +316,32 @@ class _SignupPageState extends State<Signup_guide> {
                                     height: 10,
                                   ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 0, 35, 0),
-                                        child: IconButton(
-                                          icon: const Icon(Icons.camera_alt),
-                                          onPressed: () {
-                                            _uploadPhoto("license");
-                                          },
-                                          iconSize: 24.0,
-                                          color: Colors.black,
-                                        ),
+                                      Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.black,
                                       ),
-                                      // Wrap the ElevatedButton in a Container and set its width directly
-                                      Container(
-                                        width:
-                                            200, // Adjust the width as needed
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            _uploadPhoto("license");
-                                          },
-                                          child: Text(
-                                            licensePhotoUrl == null
-                                                ? "Upload License Photo"
-                                                : path
-                                                    .basename(licensePhotoUrl!),
-                                          ),
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(
-                                              Color.fromARGB(
-                                                  255, 215, 210, 210),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: 50,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              _uploadPhoto("user");
+                                            },
+                                            child: Text(
+                                              userPhotoUrl == null
+                                                  ? "Upload your Photo"
+                                                  : path
+                                                      .basename(userPhotoUrl!),
+                                            ),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(
+                                                Color.fromARGB(
+                                                    255, 215, 210, 210),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -501,15 +480,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
             padding: const EdgeInsets.only(left: 35, top: 5),
             child: Text(
               _validatePassword(widget.controller.text)!,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-        if (widget.isPhoneNumber &&
-            _validatePhoneNumber(widget.controller.text) != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 35, top: 5),
-            child: Text(
-              _validatePhoneNumber(widget.controller.text)!,
               style: const TextStyle(color: Colors.red),
             ),
           ),

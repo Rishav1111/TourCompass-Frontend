@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:khalti_flutter/khalti_flutter.dart';
 import 'package:tourcompass/Traveler_View/rating_feedback.dart';
+import 'package:tourcompass/Utils/scaffold.dart';
 import 'dart:convert';
 
 import 'package:tourcompass/config.dart';
@@ -100,6 +101,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         negotiatedPrice: guide['negotiatedPrice'],
                         travelDate: guide['travelDate'],
                         bookingId: guide['bookingId'],
+                        paymentStatus: guide['paymentStatus'],
                       );
                     },
                   ),
@@ -119,11 +121,13 @@ class HistoryCard extends StatefulWidget {
   final int negotiatedPrice;
   final String? travelDate;
   final String bookingId;
+  final String paymentStatus;
 
   const HistoryCard({
     required this.guideId,
     required this.firstname,
     required this.lastname,
+    required this.paymentStatus,
     this.phoneNumber,
     this.expertPlace,
     required this.guidePhoto,
@@ -138,6 +142,50 @@ class HistoryCard extends StatefulWidget {
 }
 
 class _HistoryCardState extends State<HistoryCard> {
+  Future<void> cashPayment(String bookingId) async {
+    try {
+      print(bookingId);
+      final response = await http.put(
+        Uri.parse('${url}bookings/$bookingId/updateStatus'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'action': 'cash'}),
+      );
+      if (response.statusCode == 200) {
+        print('Cash payment successfully');
+        showCustomSnackBar(context, 'Cash Payment Sucessfully',
+            backgroundColor: Colors.green);
+      } else {
+        print('Failed to cancelling booking: ${response.body}');
+      }
+    } catch (error) {
+      print('Error cancelling booking: $error');
+    }
+  }
+
+  Future<void> KhaltiPayment(String bookingId) async {
+    try {
+      print(bookingId);
+      final response = await http.put(
+        Uri.parse('${url}bookings/$bookingId/updateStatus'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'action': 'khalti'}),
+      );
+      if (response.statusCode == 200) {
+        print('Khalti payment successfully');
+        showCustomSnackBar(context, 'Khalti Payment Sucessfully',
+            backgroundColor: Colors.green);
+      } else {
+        print('Failed to cancelling booking: ${response.body}');
+      }
+    } catch (error) {
+      print('Error cancelling booking: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -215,8 +263,17 @@ class _HistoryCardState extends State<HistoryCard> {
                           ),
                         ],
                       ),
-                    const SizedBox(height: 5),
-                    if (widget.status == 'Completed')
+                    if (widget.status == "Completed")
+                      Text(
+                        'Payment: ${widget.paymentStatus}',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 6, 6, 158),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    if (widget.status == 'Completed' &&
+                        widget.paymentStatus == "Pending")
                       ElevatedButton(
                         onPressed: () {
                           showDialog(
@@ -230,7 +287,7 @@ class _HistoryCardState extends State<HistoryCard> {
                                     ElevatedButton(
                                       onPressed: () {
                                         Navigator.pop(context);
-                                        // handleCashInHand();
+                                        cashPayment(widget.bookingId);
                                       },
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
@@ -305,7 +362,7 @@ class _HistoryCardState extends State<HistoryCard> {
   void paywithKhalti(BuildContext context) {
     KhaltiScope.of(context).pay(
       config: PaymentConfig(
-        amount: widget.negotiatedPrice * 100, // Convert to paisa
+        amount: 200 * 100, // Convert to paisa
         productIdentity: widget.guideId,
         productName: '${widget.firstname} ${widget.lastname}',
       ),
@@ -340,7 +397,8 @@ class _HistoryCardState extends State<HistoryCard> {
       );
 
       if (response.statusCode == 200) {
-        // Payment confirmation successful
+        await KhaltiPayment(widget.bookingId);
+
         showDialog(
           context: context,
           builder: (context) {

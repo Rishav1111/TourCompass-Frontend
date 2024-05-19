@@ -109,15 +109,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
               style: const TextStyle(color: Colors.red),
             ),
           ),
-        if (widget.isPhoneNumber &&
-            _validatePhoneNumber(widget.controller.text) != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 45, top: 5),
-            child: Text(
-              _validatePhoneNumber(widget.controller.text)!,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
       ],
     );
   }
@@ -140,14 +131,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
     if (value != null && value.isNotEmpty && !regExp.hasMatch(value)) {
       return 'Password must contain at least 8 characters, one uppercase letter, and one special character';
-    }
-    return null;
-  }
-
-  String? _validatePhoneNumber(String value) {
-    // Phone number validation
-    if (value != null && value.isNotEmpty && value.length != 10) {
-      return 'Phone number must have exactly 10 digits';
     }
     return null;
   }

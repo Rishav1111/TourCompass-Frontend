@@ -67,7 +67,7 @@ class _GuideHistoryPageState extends State<GuideHistoryPage> {
         toolbarHeight: 70,
         centerTitle: true,
         title: const Text(
-          'Order',
+          'History',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20,
@@ -89,7 +89,7 @@ class _GuideHistoryPageState extends State<GuideHistoryPage> {
             : completedAndCancelledBookings.isEmpty
                 ? const Center(
                     child: Text(
-                      'No Orders',
+                      'No History ',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -100,22 +100,24 @@ class _GuideHistoryPageState extends State<GuideHistoryPage> {
                     itemCount: completedAndCancelledBookings.length,
                     itemBuilder: (context, index) {
                       return HistoryCard(
-                        firstname: completedAndCancelledBookings[index]
-                            ['firstname'],
-                        lastname: completedAndCancelledBookings[index]
-                            ['lastname'],
-                        phoneNumber: completedAndCancelledBookings[index]
-                            ['phoneNumber'],
-                        negotiatedPrice: completedAndCancelledBookings[index]
-                            ['negotiatedPrice'],
-                        destination: completedAndCancelledBookings[index]
-                            ['destination'],
-                        status: completedAndCancelledBookings[index]['status'],
-                        travelDate: completedAndCancelledBookings[index]
-                            ['travelDate'],
-                        travelerList: completedAndCancelledBookings,
-                        index: index,
-                      );
+                          firstname: completedAndCancelledBookings[index]
+                              ['firstname'],
+                          lastname: completedAndCancelledBookings[index]
+                              ['lastname'],
+                          phoneNumber: completedAndCancelledBookings[index]
+                              ['phoneNumber'],
+                          negotiatedPrice: completedAndCancelledBookings[index]
+                              ['negotiatedPrice'],
+                          destination: completedAndCancelledBookings[index]
+                              ['destination'],
+                          status: completedAndCancelledBookings[index]
+                              ['status'],
+                          travelDate: completedAndCancelledBookings[index]
+                              ['travelDate'],
+                          travelerList: completedAndCancelledBookings,
+                          index: index,
+                          paymentStatus: completedAndCancelledBookings[index]
+                              ['paymentStatus']);
                     },
                   ),
       ),
@@ -128,6 +130,7 @@ class HistoryCard extends StatefulWidget {
   final String? lastname;
   final String? phoneNumber;
   final int? negotiatedPrice;
+  final String paymentStatus;
   final String? destination;
   final String status;
   final String? travelDate;
@@ -145,6 +148,7 @@ class HistoryCard extends StatefulWidget {
     required this.travelDate,
     required this.travelerList,
     required this.index,
+    required this.paymentStatus,
   }) : super(key: key);
 
   @override
@@ -253,7 +257,15 @@ class _HistoryCardState extends State<HistoryCard> {
                       ),
                     ),
                   ],
-                )
+                ),
+              Text(
+                'Payment: ${widget.paymentStatus}',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 6, 6, 158),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
             ],
           ),
         ),

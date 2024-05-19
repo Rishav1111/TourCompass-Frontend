@@ -1,5 +1,5 @@
-const url = 'http://192.168.1.8:5000/api/';
-// const url = 'http://10.22.18.128:5000/api/';
+// const url = 'http://192.168.1.8:5000/api/';
+const url = 'http://10.22.25.108:5000/api/';
 const adminUrl = 'http://localhost:5000/api/';
 
 const signupTraveller = '${url}signupTraveller';

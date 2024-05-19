@@ -22,11 +22,11 @@ class _GuideProfileState extends State<GuideProfile> {
   @override
   void initState() {
     super.initState();
-    String myToken = token;
-    _profileData = fetchData(myToken);
+
+    _profileData = fetchData();
   }
 
-  Future<Map<String, dynamic>> fetchData(String myToken) async {
+  Future<Map<String, dynamic>> fetchData() async {
     try {
       final response = await http.get(
         Uri.parse('${url}getGuide/${userToken['id']}'),
@@ -240,7 +240,10 @@ class _GuideProfileState extends State<GuideProfile> {
                               bio: data['bio'],
                             ),
                           ),
-                        );
+                        ).then((_) {
+                          fetchData();
+                        });
+                        ;
                       },
                     ),
                   ],

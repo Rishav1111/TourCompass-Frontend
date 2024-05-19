@@ -8,7 +8,7 @@ void showCustomSnackBar(BuildContext context, String message,
     SnackBar(
       content: Text(message),
       backgroundColor: backgroundColor,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 4),
     ),
   );
 }

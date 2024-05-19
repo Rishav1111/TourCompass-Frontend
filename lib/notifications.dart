@@ -61,12 +61,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
         notifications = [];
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load notifications.'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
@@ -94,12 +88,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
       }
     } catch (error) {
       print('Error deleting notifications: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete notifications.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Failed to delete notifications.'),
+      //     backgroundColor: Colors.red,
+      //   ),
+      // );
     }
   }
 
